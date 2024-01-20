@@ -1,0 +1,30 @@
+{
+  "name": "files",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/files/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/files",
+        "main": "libs/files/src/index.ts",
+        "tsConfig": "libs/files/tsconfig.lib.json",
+        "assets": ["libs/files/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/files/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
