@@ -6,9 +6,7 @@
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -16,11 +14,17 @@
         "outputPath": "dist/apps/core-api",
         "main": "apps/core-api/src/main.ts",
         "tsConfig": "apps/core-api/tsconfig.app.json",
-        "assets": [
-          "apps/core-api/src/assets"
-        ],
+        "assets": ["apps/core-api/src/assets"],
         "webpackConfig": "apps/core-api/webpack.config.js"
       },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "build-docker": {
+      "defaultConfiguration": "production",
+      "command": "docker build -f apps/core-api/Dockerfile . -t vsezol/space-drive-visualizer-api",
       "configurations": {
         "development": {},
         "production": {}
@@ -43,15 +47,11 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/core-api/jest.config.ts"
       }
