@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class AppService {
-  getData(): { message: string } {
-    return ({ message: 'Hello API' });
+  getFileStream(fileName: string) {
+    return createReadStream(join(__dirname, 'temp', fileName));
   }
 }
