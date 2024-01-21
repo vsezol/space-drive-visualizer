@@ -6,20 +6,18 @@ import { join } from 'path';
 import { Readable } from 'stream';
 import { v4 } from 'uuid';
 import { convertImagesToVideo } from './convert-images-to-video.function';
+import { RenderVideoRequestDto } from './dto/request/render-video-request.dto';
 import { FrameRenderer } from './frame-renderer.class';
 
 @Injectable()
 export class VideoRendererService {
-  async render(): Promise<Readable> {
-    const streams = new Array(100)
-      .fill(['red', 'green', 'blue', 'yellow', 'black', 'white'])
-      .flat()
-      .map((color) =>
-        new FrameRenderer({
-          width: 400,
-          height: 400,
-        }).render(color)
-      );
+  async render(data: RenderVideoRequestDto): Promise<Readable> {
+    const streams = data.frames.map((frame) =>
+      new FrameRenderer({
+        width: data.scene.width,
+        height: data.scene.height,
+      }).render(frame)
+    );
 
     const tempFolderPath = getTempFolderPath();
 
@@ -35,7 +33,7 @@ export class VideoRendererService {
     await convertImagesToVideo({
       inputPath: join(tempFolderPath, 'frame-%03d.png'),
       outputPath: videoPath,
-      frameRate: 60,
+      frameRate: data.frameRate,
     });
 
     return createReadStream(videoPath);

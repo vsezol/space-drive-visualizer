@@ -1,5 +1,12 @@
-import { Controller, Get, StreamableFile } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  StreamableFile,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { RenderVideoRequestDto } from './dto/request/render-video-request.dto';
 import { VideoRendererService } from './video-renderer.service';
 
 @Controller('videos')
@@ -7,7 +14,7 @@ import { VideoRendererService } from './video-renderer.service';
 export class VideosController {
   constructor(private readonly videoRendererService: VideoRendererService) {}
 
-  @Get('render')
+  @Post('render')
   @ApiOkResponse({
     schema: {
       type: 'string',
@@ -15,8 +22,8 @@ export class VideosController {
     },
   })
   @ApiProduces('video/mp4')
-  async visualize() {
-    const videoFileStream = await this.videoRendererService.render();
+  async visualize(@Body(new ValidationPipe()) body: RenderVideoRequestDto) {
+    const videoFileStream = await this.videoRendererService.render(body);
 
     return new StreamableFile(videoFileStream);
   }
