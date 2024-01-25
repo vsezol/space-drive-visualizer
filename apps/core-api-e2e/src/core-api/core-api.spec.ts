@@ -8,7 +8,7 @@ const createTestRequestBody = () => ({
     width: 1000,
     height: 500,
   },
-  frames: new Array(190).fill('').map((_, index) => ({
+  frames: new Array(500).fill('').map((_, index) => ({
     objects: [
       {
         x: 10 + index * 5,
