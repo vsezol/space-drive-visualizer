@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { saveStreamsSequence } from '@space-drive-visualizer/files';
+import { loadImage } from 'canvas';
 import { createReadStream } from 'fs';
 import { mkdir } from 'fs/promises';
 import { join } from 'path';
@@ -12,14 +13,22 @@ import { FrameRenderer } from './frame-renderer.class';
 @Injectable()
 export class VideoRendererService {
   async render(data: RenderVideoRequestDto): Promise<Readable> {
-    const streams = data.frames.map((frame) =>
-      new FrameRenderer({
-        width: data.scene.width,
-        height: data.scene.height,
-      }).render(frame)
+    const spriteImage = await loadImage(
+      join(getAssetsDirPath(), 'barrier-sprite.png')
     );
 
-    const tempFolderPath = getTempFolderPath();
+    const streams = data.frames.map((frame, index) =>
+      new FrameRenderer(
+        {
+          width: data.scene.width,
+          height: data.scene.height,
+        },
+        spriteImage,
+        index
+      ).render(frame)
+    );
+
+    const tempFolderPath = getTempDirPath();
 
     await mkdir(tempFolderPath, { recursive: true });
     await saveStreamsSequence(streams, (index) =>
@@ -40,7 +49,11 @@ export class VideoRendererService {
   }
 }
 
-function getTempFolderPath(): string {
+function getAssetsDirPath(): string {
+  return join(process.cwd(), 'apps/core-api/src/assets');
+}
+
+function getTempDirPath(): string {
   const tempFolderName = v4();
   return join(process.cwd(), 'apps/core-api/temp', tempFolderName);
 }

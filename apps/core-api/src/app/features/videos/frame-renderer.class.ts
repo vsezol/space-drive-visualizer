@@ -1,10 +1,11 @@
-import { Canvas, CanvasRenderingContext2D, createCanvas } from 'canvas';
+import { Canvas, CanvasRenderingContext2D, createCanvas, Image } from 'canvas';
 import { Readable } from 'stream';
 import {
   RenderFrame,
   RenderFrameObject,
   RenderFrameObjectType,
 } from './contracts/request/render-video-request.contract';
+import { SpriteCalculator } from './sprite-calculator.class';
 
 export interface VisualizerOptions {
   width: number;
@@ -15,7 +16,11 @@ export class FrameRenderer {
   private readonly canvas: Canvas;
   private readonly context: CanvasRenderingContext2D;
 
-  constructor(private readonly options: VisualizerOptions) {
+  constructor(
+    private readonly options: VisualizerOptions,
+    private readonly spriteImage: Image,
+    private readonly frameIndex: number
+  ) {
     this.canvas = createCanvas(options.width, options.height);
     this.context = this.canvas.getContext('2d');
   }
@@ -49,7 +54,7 @@ export class FrameRenderer {
   }
 
   private drawBarrier(object: RenderFrameObject): void {
-    this.drawCircle(object, 'white');
+    this.drawSprite(object, this.spriteImage);
   }
 
   private drawBullet(object: RenderFrameObject): void {
@@ -77,9 +82,45 @@ export class FrameRenderer {
     this.context.restore();
   }
 
+  private drawSprite({ x, y, width, height }: RenderFrameObject, image: Image) {
+    const spriteRenderer = new SpriteCalculator({
+      image: {
+        height: 128,
+        width: 128,
+      },
+      gap: 10,
+      rows: 8,
+      columns: 8,
+    });
+
+    const index = Math.trunc(this.frameIndex / 2);
+
+    const { source, target } = spriteRenderer.calcDrawImageOptions({
+      index,
+      x,
+      y,
+      width,
+      height,
+    });
+
+    this.context.imageSmoothingEnabled = true;
+    this.context.drawImage(
+      image,
+      source.x,
+      source.y,
+      source.width,
+      source.height,
+      target.x,
+      target.y,
+      target.width,
+      target.height
+    );
+  }
+
   private drawCircle({ x, y, width }: RenderFrameObject, color: string) {
+    const radius = width / 2;
     this.context.beginPath();
-    this.context.arc(x, y, width, 0, 2 * Math.PI);
+    this.context.arc(x, y, radius, 0, 2 * Math.PI);
     this.context.fillStyle = color;
     this.context.fill();
     this.context.closePath();

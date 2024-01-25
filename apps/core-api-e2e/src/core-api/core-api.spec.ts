@@ -8,7 +8,7 @@ const createTestRequestBody = () => ({
     width: 1000,
     height: 500,
   },
-  frames: new Array(200).fill('').map((_, index) => ({
+  frames: new Array(190).fill('').map((_, index) => ({
     objects: [
       {
         x: 10 + index * 5,
@@ -38,24 +38,32 @@ const createTestRequestBody = () => ({
         x: 500 + index * 15,
         y: 250 + index,
         rotation: 0,
-        width: 10,
-        height: 10,
+        width: 25,
+        height: 25,
         type: 'bullet',
       },
       {
         x: 250,
         y: 250,
         rotation: 0,
-        width: 25,
-        height: 25,
+        width: 150,
+        height: 150,
+        type: 'barrier',
+      },
+      {
+        x: 500,
+        y: 250,
+        rotation: 0,
+        width: 200,
+        height: 200,
         type: 'barrier',
       },
       {
         x: 800,
         y: 400,
         rotation: 0,
-        width: 25,
-        height: 25,
+        width: 100,
+        height: 100,
         type: 'barrier',
       },
     ],
