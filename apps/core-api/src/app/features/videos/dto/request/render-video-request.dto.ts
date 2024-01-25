@@ -9,6 +9,7 @@ import {
   Min,
 } from 'class-validator';
 import {
+  RenderFrame,
   RenderFrameObject,
   RenderFrameObjectType,
   RenderScene,
@@ -25,9 +26,9 @@ export class RenderSceneDto implements RenderScene {
   height: number;
 }
 
-export class RenderFrameDto implements RenderFrameDto {
+export class RenderFrameDto implements RenderFrame {
   @IsArray()
-  objects: RenderFrameObject[];
+  objects: RenderFrameObjectDto[];
 }
 
 export class RenderFrameObjectDto implements RenderFrameObject {

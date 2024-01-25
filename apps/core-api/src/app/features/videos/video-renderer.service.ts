@@ -6,27 +6,32 @@ import { mkdir } from 'fs/promises';
 import { join } from 'path';
 import { Readable } from 'stream';
 import { v4 } from 'uuid';
-import { convertImagesToVideo } from './convert-images-to-video.function';
+import { SpriteName } from './contracts/sprite-name.enum';
 import { RenderVideoRequestDto } from './dto/request/render-video-request.dto';
-import { FrameRenderer } from './frame-renderer.class';
+import { Sprite } from './frame-renderer/contracts/sprite.contracts';
+import { FrameRenderer } from './frame-renderer/frame-renderer.class';
+import { createSprite } from './frame-renderer/functions/create-sprite.function';
+import { mapRenderFrameToFrame } from './map-render-frame-to-frame.function';
+import { convertImagesToVideo } from './video-renderer/convert-images-to-video.function';
 
 @Injectable()
 export class VideoRendererService {
   async render(data: RenderVideoRequestDto): Promise<Readable> {
-    const spriteImage = await loadImage(
-      join(getAssetsDirPath(), 'barrier-sprite.png')
-    );
+    const sprites = await getSprites();
 
-    const streams = data.frames.map((frame, index) =>
-      new FrameRenderer(
-        {
+    const streams = data.frames
+      .map(mapRenderFrameToFrame)
+      .map((frame, frameIndex) => {
+        // TODO create one-time initialization
+        const renderer = new FrameRenderer({
           width: data.scene.width,
           height: data.scene.height,
-        },
-        spriteImage,
-        index
-      ).render(frame)
-    );
+          frameIndex,
+          sprites,
+        });
+
+        return renderer.render(frame);
+      });
 
     const tempFolderPath = getTempDirPath();
 
@@ -62,4 +67,39 @@ function getFileNameByIndex(i: number) {
   const fileNumber = (i + 1).toString().padStart(3, '0');
 
   return `frame-${fileNumber}.png`;
+}
+
+async function getSprites(): Promise<Record<string, Sprite>> {
+  const asteroidSprite = await loadImage(
+    join(getAssetsDirPath(), 'barrier-sprite.png')
+  );
+
+  const sprites: Record<string, Sprite> = {
+    [SpriteName.AsteroidLeft]: createSprite({
+      source: asteroidSprite,
+      segment: {
+        width: 128,
+        height: 128,
+      },
+      gap: 10,
+      rows: 4,
+      columns: 8,
+    }),
+    [SpriteName.AsteroidRight]: createSprite({
+      source: asteroidSprite,
+      segment: {
+        width: 128,
+        height: 128,
+      },
+      gap: 10,
+      rows: 4,
+      columns: 8,
+      offset: {
+        rows: 4,
+        columns: 0,
+      },
+    }),
+  };
+
+  return sprites;
 }
