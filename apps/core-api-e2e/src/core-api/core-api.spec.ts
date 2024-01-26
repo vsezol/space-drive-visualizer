@@ -3,12 +3,22 @@ import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { Stream } from 'stream';
 
+// Single Thread PNG
+// 600 frames 60fps - 16.089s
+
+// Single Thread JPEG
+// 600 frames 60fps 0.75 quality - 1.84s
+// 6000 frames 60fps 0.1 quality - 18.728s
+// 6000 frames 60fps 0.75 quality - 17.706s, 4.3mb
+// 6000 frames 60fps 1.0 quality - 19.554s, 4mb
+// 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
+
 const createTestRequestBody = () => ({
   scene: {
     width: 1000,
     height: 500,
   },
-  frames: new Array(500).fill('').map((_, index) => ({
+  frames: new Array(6000).fill('').map((_, index) => ({
     objects: [
       {
         x: 10 + index * 5,

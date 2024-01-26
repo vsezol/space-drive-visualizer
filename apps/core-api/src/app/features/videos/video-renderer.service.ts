@@ -45,9 +45,10 @@ export class VideoRendererService {
     const videoPath = join(tempFolderPath, 'video.mp4');
 
     await convertImagesToVideo({
-      inputPath: join(tempFolderPath, 'frame-%03d.png'),
+      inputPath: join(tempFolderPath, 'frame-%03d.jpeg'),
       outputPath: videoPath,
       frameRate: data.frameRate,
+      totalCount: streams.length,
     });
 
     return createReadStream(videoPath);
@@ -66,7 +67,7 @@ function getTempDirPath(): string {
 function getFileNameByIndex(i: number) {
   const fileNumber = (i + 1).toString().padStart(3, '0');
 
-  return `frame-${fileNumber}.png`;
+  return `frame-${fileNumber}.jpeg`;
 }
 
 async function getSprites(): Promise<Record<string, Sprite>> {

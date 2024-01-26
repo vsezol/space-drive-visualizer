@@ -48,6 +48,6 @@ export class FrameRenderer {
       })
       .forEach((renderer) => renderer.render());
 
-    return this.canvas.createPNGStream();
+    return this.canvas.createJPEGStream({ quality: 1 });
   }
 }

@@ -6,6 +6,7 @@ interface RenderVideoOptions {
   inputPath: string;
   outputPath: string;
   frameRate: number;
+  totalCount: number;
 }
 
 export async function convertImagesToVideo(
@@ -22,7 +23,10 @@ export async function convertImagesToVideo(
       .videoCodec('libx264')
       .outputOptions('-pix_fmt', 'yuv420p')
       .saveToFile(outputPath)
-      .on('progress', () => Logger.log(`Processing`))
+      .on('progress', (info) => {
+        const percent = Math.round((info.frames / options.totalCount) * 100);
+        Logger.log(`Processing ${percent}%`);
+      })
       .on('end', () => resolve())
       .on('error', (error) => reject(error));
   });
