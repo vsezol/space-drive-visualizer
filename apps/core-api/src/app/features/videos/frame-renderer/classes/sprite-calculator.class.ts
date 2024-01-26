@@ -28,8 +28,8 @@ export class SpriteCalculator {
         height: segment.height - gap,
       },
       target: {
-        x: output.x - output.width / 2,
-        y: output.y - output.height / 2,
+        x: output.x,
+        y: output.y,
         width: output.width,
         height: output.height,
       },

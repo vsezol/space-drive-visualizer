@@ -74,6 +74,9 @@ async function getSprites(): Promise<Record<string, Sprite>> {
   const asteroidSprite = await loadImage(
     join(getAssetsDirPath(), 'barrier-sprite.png')
   );
+  const spaceshipsSprite = await loadImage(
+    join(getAssetsDirPath(), 'spaceships-sprite.png')
+  );
 
   const sprites: Record<string, Sprite> = {
     [SpriteName.AsteroidLeft]: createSprite({
@@ -98,6 +101,34 @@ async function getSprites(): Promise<Record<string, Sprite>> {
       offset: {
         rows: 4,
         columns: 0,
+      },
+    }),
+    [SpriteName.SpaceshipGreen]: createSprite({
+      source: spaceshipsSprite,
+      segment: {
+        width: 96,
+        height: 96,
+      },
+      gap: 0,
+      rows: 1,
+      columns: 1,
+      offset: {
+        rows: 1,
+        columns: 6,
+      },
+    }),
+    [SpriteName.SpaceshipOrange]: createSprite({
+      source: spaceshipsSprite,
+      segment: {
+        width: 96,
+        height: 96,
+      },
+      gap: 0,
+      rows: 1,
+      columns: 1,
+      offset: {
+        rows: 1,
+        columns: 7,
       },
     }),
   };

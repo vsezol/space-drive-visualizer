@@ -18,22 +18,22 @@ const createTestRequestBody = () => ({
     width: 1000,
     height: 500,
   },
-  frames: new Array(6000).fill('').map((_, index) => ({
+  frames: new Array(600).fill('').map((_, index) => ({
     objects: [
       {
-        x: 10 + index * 5,
+        x: 10 + index * 3,
         y: 10 + index,
         rotation: 0 + index,
-        width: 100,
-        height: 50,
+        width: 95,
+        height: 95,
         type: 'player',
       },
       {
-        x: 900 - index * 5,
+        x: 900 - index * 3,
         y: 350 - index,
-        rotation: 50 + index,
-        width: 100,
-        height: 50,
+        rotation: 0 + index,
+        width: 95,
+        height: 95,
         type: 'enemy',
       },
       {
@@ -72,8 +72,8 @@ const createTestRequestBody = () => ({
         x: 800,
         y: 100,
         rotation: 0,
-        width: 175,
-        height: 175,
+        width: 150,
+        height: 150,
         type: 'barrier',
       },
     ],

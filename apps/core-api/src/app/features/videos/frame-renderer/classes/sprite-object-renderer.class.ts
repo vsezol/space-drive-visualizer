@@ -27,6 +27,11 @@ export class SpriteObjectRenderer extends ObjectRenderer<SpriteObject> {
       height: this.object.height,
     });
 
+    this.context.save();
+
+    this.context.translate(target.x, target.y);
+    this.context.rotate((this.object.rotation * Math.PI) / 180);
+
     this.context.imageSmoothingEnabled = true;
     this.context.drawImage(
       this.sprite.source,
@@ -34,10 +39,12 @@ export class SpriteObjectRenderer extends ObjectRenderer<SpriteObject> {
       source.y,
       source.width,
       source.height,
-      target.x,
-      target.y,
+      -target.width / 2,
+      -target.height / 2,
       target.width,
       target.height
     );
+
+    this.context.restore();
   }
 }

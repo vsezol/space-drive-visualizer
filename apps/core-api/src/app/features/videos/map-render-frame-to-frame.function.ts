@@ -21,9 +21,9 @@ function mapRenderFrameObjectToBaseObject(
 ): BaseObject {
   switch (object.type) {
     case RenderFrameObjectType.Player:
-      return mapObjectToRectangle(object, 'green');
+      return mapPlayerToSpriteObject(object);
     case RenderFrameObjectType.Enemy:
-      return mapObjectToRectangle(object, 'red');
+      return mapEnemyToSpriteObject(object);
     case RenderFrameObjectType.Bullet:
       return mapBulletToCircle(object);
     case RenderFrameObjectType.Barrier:
@@ -31,6 +31,28 @@ function mapRenderFrameObjectToBaseObject(
     default:
       return mapObjectToRectangle(object);
   }
+}
+
+function mapPlayerToSpriteObject(object: RenderFrameObject): SpriteObject {
+  return new SpriteObject({
+    x: object.x,
+    y: object.y,
+    width: object.width,
+    height: object.height,
+    rotation: object.rotation,
+    spriteName: SpriteName.SpaceshipGreen,
+  });
+}
+
+function mapEnemyToSpriteObject(object: RenderFrameObject): SpriteObject {
+  return new SpriteObject({
+    x: object.x,
+    y: object.y,
+    width: object.width,
+    height: object.height,
+    rotation: object.rotation,
+    spriteName: SpriteName.SpaceshipOrange,
+  });
 }
 
 function mapObjectToRectangle(
@@ -62,6 +84,7 @@ function mapBarrierToSpriteObject(object: RenderFrameObject): SpriteObject {
     y: object.y,
     width: object.width,
     height: object.height,
+    rotation: object.rotation,
     spriteName: SpriteName.AsteroidLeft,
   });
 }
