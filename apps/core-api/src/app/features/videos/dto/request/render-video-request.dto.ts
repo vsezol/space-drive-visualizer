@@ -1,12 +1,16 @@
+import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsEnum,
   IsInt,
   IsNumber,
   IsObject,
   IsPositive,
+  IsString,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import {
   RenderFrame,
@@ -28,21 +32,23 @@ export class RenderSceneDto implements RenderScene {
 
 export class RenderFrameDto implements RenderFrame {
   @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => RenderFrameObjectDto)
   objects: RenderFrameObjectDto[];
 }
 
 export class RenderFrameObjectDto implements RenderFrameObject {
+  @IsString()
+  id: string;
+
   @IsNumber()
-  @IsPositive()
   x: number;
 
   @IsNumber()
-  @IsPositive()
   y: number;
 
   @IsNumber()
-  @Min(0)
-  @Max(360)
   rotation: number;
 
   @IsInt()
@@ -62,6 +68,9 @@ export class RenderVideoRequestDto implements RenderVideoRequest {
   scene: RenderSceneDto;
 
   @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => RenderFrameDto)
   frames: RenderFrameDto[];
 
   @IsInt()

@@ -14,6 +14,7 @@ export interface RenderFrame {
 }
 
 export interface RenderFrameObject {
+  id: string;
   x: number;
   y: number;
   rotation: number;

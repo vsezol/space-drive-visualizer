@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { Stream } from 'stream';
+import { v4 } from 'uuid';
 
 // Single Thread PNG
 // 600 frames 60fps - 16.089s
@@ -21,6 +22,7 @@ const createTestRequestBody = () => ({
   frames: new Array(600).fill('').map((_, index) => ({
     objects: [
       {
+        id: v4(),
         x: 10 + index * 3,
         y: 10 + index,
         rotation: 0 + index,
@@ -29,6 +31,7 @@ const createTestRequestBody = () => ({
         type: 'player',
       },
       {
+        id: v4(),
         x: 900 - index * 3,
         y: 350 - index,
         rotation: 0 + index,
@@ -37,6 +40,7 @@ const createTestRequestBody = () => ({
         type: 'enemy',
       },
       {
+        id: v4(),
         x: 10 + index * 5,
         y: 10 + index * 5,
         rotation: 0,
@@ -45,6 +49,7 @@ const createTestRequestBody = () => ({
         type: 'bullet',
       },
       {
+        id: v4(),
         x: 500 + index * 5,
         y: 250 + index,
         rotation: 0,
@@ -53,6 +58,7 @@ const createTestRequestBody = () => ({
         type: 'bullet',
       },
       {
+        id: v4(),
         x: 500 + index * 5,
         y: 250 - index * 5,
         rotation: 0,
@@ -61,6 +67,7 @@ const createTestRequestBody = () => ({
         type: 'bullet',
       },
       {
+        id: v4(),
         x: 500 - index * 5,
         y: 250 - index * 5,
         rotation: 0,
@@ -69,6 +76,7 @@ const createTestRequestBody = () => ({
         type: 'bullet',
       },
       {
+        id: v4(),
         x: 800,
         y: 400,
         rotation: index * 2,
@@ -77,6 +85,7 @@ const createTestRequestBody = () => ({
         type: 'barrier',
       },
       {
+        id: v4(),
         x: 250,
         y: 250,
         rotation: index,
@@ -85,6 +94,7 @@ const createTestRequestBody = () => ({
         type: 'barrier',
       },
       {
+        id: v4(),
         x: 800,
         y: 100,
         rotation: -index,
@@ -112,7 +122,7 @@ describe('GET /api', () => {
           }
         );
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
       }
 
       const outputPath = join(__dirname, '../temp/test-response.mp4');
