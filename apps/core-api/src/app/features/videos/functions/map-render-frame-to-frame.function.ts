@@ -6,6 +6,7 @@ import {
   SpriteObject,
 } from '@space-drive-visualizer/frame-renderer';
 import {
+  FlameMeta,
   RenderFrame,
   RenderFrameObject,
   RenderFrameObjectType,
@@ -30,6 +31,8 @@ function mapRenderFrameObjectToBaseObject(
       return mapBulletToCircle(object);
     case RenderFrameObjectType.Barrier:
       return mapBarrierToSpriteObject(object);
+    case RenderFrameObjectType.Flame:
+      return mapFlameToCircleObject(object);
     default:
       return mapObjectToRectangle(object);
   }
@@ -54,6 +57,32 @@ function mapEnemyToSpriteObject(object: RenderFrameObject): SpriteObject {
     height: object.height,
     rotation: object.rotation,
     spriteName: SpriteName.Enemy,
+  });
+}
+
+function isFlameMeta(data: object | undefined | null): data is FlameMeta {
+  return Boolean(data) && 'target' in data;
+}
+
+function mapFlameToCircleObject(object: RenderFrameObject): Circle {
+  const meta = object?.meta;
+
+  let color: string = 'blue';
+  const alpha = Number((0.6 + Math.random() * 0.4).toFixed(2));
+
+  if (isFlameMeta(meta)) {
+    if (meta.target.type === RenderFrameObjectType.Enemy) {
+      color = `rgba(255, 201, 129, ${alpha * meta.opacity})`;
+    } else if (meta.target.type === RenderFrameObjectType.Player) {
+      color = `rgba(64, 255, 76, ${alpha * meta.opacity})`;
+    }
+  }
+
+  return new Circle({
+    x: object.x,
+    y: object.y,
+    radius: object.width,
+    color,
   });
 }
 

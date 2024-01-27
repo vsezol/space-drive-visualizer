@@ -9,6 +9,7 @@ import { lastValueFrom } from 'rxjs';
 import { Readable } from 'stream';
 import { getUniqTempDirPath } from '../../common/path.utils';
 import { RenderVideoRequestDto } from './dto/request/render-video-request.dto';
+import { addVisualObjects } from './functions/add-visual-objects.function';
 import { mapRenderFrameToFrame } from './functions/map-render-frame-to-frame.function';
 import { SpritesService } from './sprites.service';
 
@@ -19,7 +20,7 @@ export class VideoRendererService {
   async render(data: RenderVideoRequestDto): Promise<Readable> {
     const sprites = await lastValueFrom(this.spritesService.sprites$);
 
-    const streams = data.frames
+    const streams = addVisualObjects(data.frames)
       .map(mapRenderFrameToFrame)
       .map((frame, frameIndex) => {
         // TODO create one-time initialization

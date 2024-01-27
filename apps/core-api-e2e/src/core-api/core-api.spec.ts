@@ -14,27 +14,30 @@ import { v4 } from 'uuid';
 // 6000 frames 60fps 1.0 quality - 19.554s, 4mb
 // 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
 
+const playerId = v4();
+const enemyId = v4();
+
 const createTestRequestBody = () => ({
   scene: {
     width: 1000,
     height: 500,
   },
-  frames: new Array(300).fill('').map((_, index) => ({
+  frames: new Array(600).fill('').map((_, index) => ({
     objects: [
       {
-        id: v4(),
-        x: 10 + index * 3,
-        y: 10 + index,
-        rotation: 0 + index,
+        id: playerId,
+        x: 530 - 200 * Math.cos((-index * 0.5 * Math.PI) / 180),
+        y: 275 - 200 * Math.sin((-index * 0.5 * Math.PI) / 180),
+        rotation: 180 - index * 0.5,
         width: 95,
         height: 95,
         type: 'player',
       },
       {
-        id: v4(),
-        x: 900 - index * 3 + 0,
-        y: 350 - index,
-        rotation: 0 + index,
+        id: enemyId,
+        x: 250 - 200 * Math.cos((index * Math.PI) / 180),
+        y: 250 - 200 * Math.sin((index * Math.PI) / 180),
+        rotation: index,
         width: 95,
         height: 95,
         type: 'enemy',
