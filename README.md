@@ -15,4 +15,22 @@ Visualizing service for <a href="https://github.com/SKY-ALIN/space-drive-game">s
 
 ### Setup Guide
 
+Install deps
+
+```bash
+npm i
+```
+
+Run server
+
+```bash
+npx nx run core-api:serve
+```
+
+Run tests
+
+```bash
+npx nx run core-api-e2e:e2e
+```
+
 . . .
