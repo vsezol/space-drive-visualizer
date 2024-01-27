@@ -32,7 +32,7 @@ const createTestRequestBody = () => ({
       },
       {
         id: v4(),
-        x: 900 - index * 3,
+        x: 900 - index * 3 + 0,
         y: 350 - index,
         rotation: 0 + index,
         width: 95,

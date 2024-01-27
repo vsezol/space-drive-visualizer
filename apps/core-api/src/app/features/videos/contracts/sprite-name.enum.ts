@@ -1,6 +1,6 @@
 export enum SpriteName {
-  AsteroidLeft = 'asteroid-left',
-  AsteroidRight = 'asteroid-right',
-  SpaceshipGreen = 'spaceship-green',
-  SpaceshipOrange = 'spaceship-orange',
+  BarrierLeft = 'barrier-left',
+  BarrierRight = 'barrier-right',
+  Player = 'player',
+  Enemy = 'enemy',
 }

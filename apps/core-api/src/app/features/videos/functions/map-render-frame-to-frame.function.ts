@@ -42,7 +42,7 @@ function mapPlayerToSpriteObject(object: RenderFrameObject): SpriteObject {
     width: object.width,
     height: object.height,
     rotation: object.rotation,
-    spriteName: SpriteName.SpaceshipGreen,
+    spriteName: SpriteName.Player,
   });
 }
 
@@ -53,7 +53,7 @@ function mapEnemyToSpriteObject(object: RenderFrameObject): SpriteObject {
     width: object.width,
     height: object.height,
     rotation: object.rotation,
-    spriteName: SpriteName.SpaceshipOrange,
+    spriteName: SpriteName.Enemy,
   });
 }
 
@@ -87,6 +87,6 @@ function mapBarrierToSpriteObject(object: RenderFrameObject): SpriteObject {
     width: object.width,
     height: object.height,
     rotation: object.rotation,
-    spriteName: SpriteName.AsteroidLeft,
+    spriteName: SpriteName.BarrierLeft,
   });
 }
