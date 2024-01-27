@@ -2,7 +2,7 @@ import { ObjectRenderer } from './abstract/object-renderer.abstract';
 import { Circle } from './circle.class';
 
 export class CircleRenderer extends ObjectRenderer<Circle> {
-  render(): void {
+  override render(): void {
     this.context.beginPath();
 
     this.context.arc(

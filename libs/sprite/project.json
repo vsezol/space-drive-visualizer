@@ -1,0 +1,30 @@
+{
+  "name": "sprite",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/sprite/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/sprite",
+        "main": "libs/sprite/src/index.ts",
+        "tsConfig": "libs/sprite/tsconfig.lib.json",
+        "assets": ["libs/sprite/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/sprite/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

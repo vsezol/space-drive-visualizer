@@ -1,8 +1,8 @@
+import { Sprite } from '@space-drive-visualizer/sprite';
 import {
   DrawImageOptions,
   OutputImageOptions,
 } from '../contracts/sprite-calculator.contracts';
-import { Sprite } from '../contracts/sprite.contracts';
 
 export class SpriteCalculator {
   constructor(private readonly sprite: Sprite) {}

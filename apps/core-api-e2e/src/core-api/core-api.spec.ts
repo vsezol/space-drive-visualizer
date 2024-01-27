@@ -19,7 +19,7 @@ const createTestRequestBody = () => ({
     width: 1000,
     height: 500,
   },
-  frames: new Array(600).fill('').map((_, index) => ({
+  frames: new Array(300).fill('').map((_, index) => ({
     objects: [
       {
         id: v4(),

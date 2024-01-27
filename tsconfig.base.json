@@ -15,7 +15,14 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@space-drive-visualizer/files": ["libs/files/src/index.ts"]
+      "@space-drive-visualizer/files": ["libs/files/src/index.ts"],
+      "@space-drive-visualizer/frame-renderer": [
+        "libs/frame-renderer/src/index.ts"
+      ],
+      "@space-drive-visualizer/sprite": ["libs/sprite/src/index.ts"],
+      "@space-drive-visualizer/video-converter": [
+        "libs/video-converter/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { saveStreamsSequence } from '@space-drive-visualizer/files';
+import { FrameRenderer } from '@space-drive-visualizer/frame-renderer';
+import { Sprite, createSprite } from '@space-drive-visualizer/sprite';
+import { convertImagesToVideo } from '@space-drive-visualizer/video-converter';
 import { loadImage } from 'canvas';
 import { createReadStream } from 'fs';
 import { mkdir } from 'fs/promises';
@@ -8,11 +11,7 @@ import { Readable } from 'stream';
 import { v4 } from 'uuid';
 import { SpriteName } from './contracts/sprite-name.enum';
 import { RenderVideoRequestDto } from './dto/request/render-video-request.dto';
-import { Sprite } from './frame-renderer/contracts/sprite.contracts';
-import { FrameRenderer } from './frame-renderer/frame-renderer.class';
-import { createSprite } from './frame-renderer/functions/create-sprite.function';
-import { mapRenderFrameToFrame } from './map-render-frame-to-frame.function';
-import { convertImagesToVideo } from './video-renderer/convert-images-to-video.function';
+import { mapRenderFrameToFrame } from './functions/map-render-frame-to-frame.function';
 
 @Injectable()
 export class VideoRendererService {

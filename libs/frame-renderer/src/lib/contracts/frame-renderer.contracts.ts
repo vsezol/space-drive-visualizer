@@ -1,5 +1,5 @@
+import { Sprite } from '@space-drive-visualizer/sprite';
 import { BaseObject } from '../classes/abstract/base-object.abstract';
-import { Sprite } from './sprite.contracts';
 
 export interface FrameRendererOptions {
   width: number;

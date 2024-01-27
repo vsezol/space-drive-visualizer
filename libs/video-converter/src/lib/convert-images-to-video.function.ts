@@ -14,7 +14,7 @@ export async function convertImagesToVideo(
 ): Promise<void> {
   const { inputPath, outputPath, frameRate } = options;
 
-  ffmpeg.setFfmpegPath(ffmpegStatic);
+  ffmpeg.setFfmpegPath(ffmpegStatic ?? '');
 
   await new Promise<void>((resolve, reject) => {
     ffmpeg()

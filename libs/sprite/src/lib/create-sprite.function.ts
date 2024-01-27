@@ -1,4 +1,4 @@
-import { Sprite } from '../contracts/sprite.contracts';
+import { Sprite } from './sprite.contracts';
 
 type Options = Omit<Sprite, 'offset'> & Partial<Pick<Sprite, 'offset'>>;
 

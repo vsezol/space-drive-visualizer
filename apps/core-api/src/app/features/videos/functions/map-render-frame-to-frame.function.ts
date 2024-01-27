@@ -1,14 +1,16 @@
 import {
+  BaseObject,
+  Circle,
+  Frame,
+  Rectangle,
+  SpriteObject,
+} from '@space-drive-visualizer/frame-renderer';
+import {
   RenderFrame,
   RenderFrameObject,
   RenderFrameObjectType,
-} from './contracts/request/render-video-request.contract';
-import { SpriteName } from './contracts/sprite-name.enum';
-import { BaseObject } from './frame-renderer/classes/abstract/base-object.abstract';
-import { Circle } from './frame-renderer/classes/circle.class';
-import { Rectangle } from './frame-renderer/classes/rectangle.class';
-import { SpriteObject } from './frame-renderer/classes/sprite-object.class';
-import { Frame } from './frame-renderer/contracts/frame-renderer.contracts';
+} from '../contracts/request/render-video-request.contract';
+import { SpriteName } from '../contracts/sprite-name.enum';
 
 export function mapRenderFrameToFrame(frame: RenderFrame): Frame {
   return {

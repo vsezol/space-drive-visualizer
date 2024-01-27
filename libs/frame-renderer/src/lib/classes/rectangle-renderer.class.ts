@@ -2,7 +2,7 @@ import { ObjectRenderer } from './abstract/object-renderer.abstract';
 import { Rectangle } from './rectangle.class';
 
 export class RectangleRenderer extends ObjectRenderer<Rectangle> {
-  render(): void {
+  override render(): void {
     const { x, y, width, height, rotation, color } = this.object;
 
     this.context.save();

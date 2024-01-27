@@ -1,5 +1,5 @@
+import { Sprite } from '@space-drive-visualizer/sprite';
 import { CanvasRenderingContext2D } from 'canvas';
-import { Sprite } from '../contracts/sprite.contracts';
 import { ObjectRenderer } from './abstract/object-renderer.abstract';
 import { SpriteCalculator } from './sprite-calculator.class';
 import { SpriteObject } from './sprite-object.class';
@@ -14,7 +14,7 @@ export class SpriteObjectRenderer extends ObjectRenderer<SpriteObject> {
     super(context, object);
   }
 
-  render(): void {
+  override render(): void {
     const spriteRenderer = new SpriteCalculator(this.sprite);
 
     const index = Math.trunc(this.frameIndex / 2);

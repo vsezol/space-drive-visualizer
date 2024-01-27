@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "../sprite/src/lib/sprite.contracts.ts",
+    "../sprite/src/lib/create-sprite.function.ts"
+  ],
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+}
