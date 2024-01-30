@@ -25,15 +25,16 @@ export interface RenderFrameObject {
 }
 
 export interface FlameMeta {
-  target: {
-    type: RenderFrameObjectType;
-  };
+  color: [number, number, number];
   opacity: number;
 }
 
+export interface SpaceshipMeta {
+  color: [number, number, number];
+}
+
 export enum RenderFrameObjectType {
-  Player = 'player',
-  Enemy = 'enemy',
+  Spaceship = 'spaceship',
   Bullet = 'bullet',
   Barrier = 'barrier',
   Flame = 'flame',

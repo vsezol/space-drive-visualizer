@@ -14,8 +14,7 @@ import { v4 } from 'uuid';
 // 6000 frames 60fps 1.0 quality - 19.554s, 4mb
 // 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
 
-const playerId = v4();
-const enemyId = v4();
+const playersIds = [v4(), v4(), v4(), v4()];
 
 const createTestRequestBody = () => ({
   scene: {
@@ -25,22 +24,52 @@ const createTestRequestBody = () => ({
   frames: new Array(600).fill('').map((_, index) => ({
     objects: [
       {
-        id: playerId,
+        id: playersIds[0],
         x: 530 - 200 * Math.cos((-index * 0.5 * Math.PI) / 180),
         y: 275 - 200 * Math.sin((-index * 0.5 * Math.PI) / 180),
         rotation: 180 - index * 0.5,
         width: 95,
         height: 95,
-        type: 'player',
+        type: 'spaceship',
+        meta: {
+          color: [255, 201, 129],
+        },
       },
       {
-        id: enemyId,
+        id: playersIds[1],
+        x: 550 - 100 * Math.cos((-index * 2 * Math.PI) / 180),
+        y: 300 - 100 * Math.sin((-index * 2 * Math.PI) / 180),
+        rotation: 180 - index * 2,
+        width: 50,
+        height: 50,
+        type: 'spaceship',
+        meta: {
+          color: [64, 255, 76],
+        },
+      },
+      {
+        id: playersIds[2],
         x: 250 - 200 * Math.cos((index * Math.PI) / 180),
         y: 250 - 200 * Math.sin((index * Math.PI) / 180),
         rotation: index,
         width: 95,
         height: 95,
-        type: 'enemy',
+        type: 'spaceship',
+        meta: {
+          color: [64, 255, 255],
+        },
+      },
+      {
+        id: playersIds[3],
+        x: 100 - 200 * Math.cos((index * Math.PI) / 180),
+        y: 100 - 200 * Math.sin((index * Math.PI) / 180),
+        rotation: index,
+        width: 125,
+        height: 125,
+        type: 'spaceship',
+        meta: {
+          color: [255, 0, 255],
+        },
       },
       {
         id: v4(),

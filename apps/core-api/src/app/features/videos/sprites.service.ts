@@ -49,7 +49,7 @@ function createSpritesConfig([barrierSprite, spaceshipsSprite]: [
         columns: 0,
       },
     }),
-    [SpriteName.Player]: createSprite({
+    [SpriteName.Spaceship]: createSprite({
       source: spaceshipsSprite,
       segment: {
         width: 96,
@@ -61,20 +61,6 @@ function createSpritesConfig([barrierSprite, spaceshipsSprite]: [
       offset: {
         rows: 1,
         columns: 6,
-      },
-    }),
-    [SpriteName.Enemy]: createSprite({
-      source: spaceshipsSprite,
-      segment: {
-        width: 96,
-        height: 96,
-      },
-      gap: 0,
-      rows: 1,
-      columns: 1,
-      offset: {
-        rows: 1,
-        columns: 7,
       },
     }),
   };

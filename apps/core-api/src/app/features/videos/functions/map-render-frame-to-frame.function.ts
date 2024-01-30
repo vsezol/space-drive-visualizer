@@ -23,10 +23,8 @@ function mapRenderFrameObjectToBaseObject(
   object: RenderFrameObject
 ): BaseObject {
   switch (object.type) {
-    case RenderFrameObjectType.Player:
+    case RenderFrameObjectType.Spaceship:
       return mapPlayerToSpriteObject(object);
-    case RenderFrameObjectType.Enemy:
-      return mapEnemyToSpriteObject(object);
     case RenderFrameObjectType.Bullet:
       return mapBulletToCircle(object);
     case RenderFrameObjectType.Barrier:
@@ -45,23 +43,12 @@ function mapPlayerToSpriteObject(object: RenderFrameObject): SpriteObject {
     width: object.width,
     height: object.height,
     rotation: object.rotation,
-    spriteName: SpriteName.Player,
-  });
-}
-
-function mapEnemyToSpriteObject(object: RenderFrameObject): SpriteObject {
-  return new SpriteObject({
-    x: object.x,
-    y: object.y,
-    width: object.width,
-    height: object.height,
-    rotation: object.rotation,
-    spriteName: SpriteName.Enemy,
+    spriteName: SpriteName.Spaceship,
   });
 }
 
 function isFlameMeta(data: object | undefined | null): data is FlameMeta {
-  return Boolean(data) && 'target' in data;
+  return Boolean(data) && 'color' in data && 'opacity' in data;
 }
 
 function mapFlameToCircleObject(object: RenderFrameObject): Circle {
@@ -71,11 +58,8 @@ function mapFlameToCircleObject(object: RenderFrameObject): Circle {
   const alpha = Number((0.6 + Math.random() * 0.4).toFixed(2));
 
   if (isFlameMeta(meta)) {
-    if (meta.target.type === RenderFrameObjectType.Enemy) {
-      color = `rgba(255, 201, 129, ${alpha * meta.opacity})`;
-    } else if (meta.target.type === RenderFrameObjectType.Player) {
-      color = `rgba(64, 255, 76, ${alpha * meta.opacity})`;
-    }
+    const [red, green, blue] = meta.color;
+    color = `rgba(${red}, ${green}, ${blue}, ${alpha * meta.opacity})`;
   }
 
   return new Circle({

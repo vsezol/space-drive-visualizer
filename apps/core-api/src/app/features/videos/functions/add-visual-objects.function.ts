@@ -1,42 +1,41 @@
 import { v4 } from 'uuid';
 import {
-  FlameMeta,
   RenderFrame,
   RenderFrameObject,
   RenderFrameObjectType,
 } from '../contracts/request/render-video-request.contract';
+import { calcCircleX } from './calc-circle-x.function';
+import { calcCircleY } from './calc-circle-y.function';
+import { isSpaceshipMeta } from './is-spaceship-meta.function';
+
+const LAST_FRAMES_COUNT = 27;
 
 export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
-  const player = findFirstObjectByType(frames, RenderFrameObjectType.Player);
-  const enemy = findFirstObjectByType(frames, RenderFrameObjectType.Enemy);
+  const spaceshipsIds = findObjectIdsByType(
+    frames,
+    RenderFrameObjectType.Spaceship
+  );
 
-  if (player === undefined || enemy === undefined) {
+  const lastSpaceships: SizedMap<RenderFrameObject> = new SizedMap(
+    LAST_FRAMES_COUNT
+  );
+
+  if (spaceshipsIds.size < 0) {
     return frames;
   }
-
-  let playerLast: RenderFrameObject[] = [];
-  let enemyLast: RenderFrameObject[] = [];
-  const lastFramesCount = 27;
 
   return frames.map((frame) => {
     return {
       objects: frame.objects.flatMap((object) => {
-        if (object.id === player.id) {
-          playerLast = [...playerLast, object].slice(-lastFramesCount);
+        if (spaceshipsIds.has(object.id)) {
+          lastSpaceships.add(object.id, object);
 
-          return [
-            ...createFlamesByLastObjects(playerLast, lastFramesCount),
-            object,
-          ];
-        }
+          const flames = createFlamesForObjects(
+            lastSpaceships.get(object.id),
+            LAST_FRAMES_COUNT
+          );
 
-        if (object.id === enemy.id) {
-          enemyLast = [...enemyLast, object].slice(-lastFramesCount);
-
-          return [
-            ...createFlamesByLastObjects(enemyLast, lastFramesCount),
-            object,
-          ];
+          return [...flames, object];
         }
 
         return object;
@@ -45,7 +44,7 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
   });
 }
 
-function createFlamesByLastObjects(
+function createFlamesForObjects(
   lastObjects: RenderFrameObject[],
   size: number
 ): RenderFrameObject[] {
@@ -58,52 +57,62 @@ function createFlame(
   target: RenderFrameObject,
   sizeFactor: number
 ): RenderFrameObject {
-  const meta: FlameMeta = {
-    target: {
-      type: target.type,
-    },
-    opacity: Math.pow(sizeFactor, 3),
-  };
+  if (!isSpaceshipMeta(target.meta)) {
+    return;
+  }
 
   const originalSize = target.width / 12;
-
-  const width = originalSize * sizeFactor;
-  const height = originalSize * sizeFactor;
+  const size = originalSize * sizeFactor;
 
   const distance = target.width / 2 - originalSize;
 
-  const rotation = target.rotation + 90 + 0;
+  // TODO move 90 some there
+  const angle = target.rotation + 90;
 
-  const x =
-    target.x +
-    (distance + Math.random() * originalSize) *
-      Math.cos((rotation * Math.PI) / 180);
-  const y =
-    target.y +
-    (distance + Math.random() * originalSize) *
-      Math.sin((rotation * Math.PI) / 180);
+  const withVariance = (x: number) => x + Math.random() * originalSize;
 
   return {
     id: v4(),
-    x: x,
-    y: y,
-    width,
-    height,
+    x: calcCircleX(target.x, withVariance(distance), angle),
+    y: calcCircleY(target.y, withVariance(distance), angle),
+    width: size,
+    height: size,
     rotation: 0,
     type: RenderFrameObjectType.Flame,
-    meta,
+    meta: {
+      opacity: Math.pow(sizeFactor, 3),
+      color: target.meta.color,
+    },
   };
 }
 
-function findFirstObjectByType(
+function findObjectIdsByType(
   frames: RenderFrame[],
   type: RenderFrameObjectType
-): RenderFrameObject | undefined {
+): Set<string> {
+  const ids: Set<string> = new Set();
+
   for (const frame of frames) {
     for (const object of frame.objects) {
-      if (object?.type === type) {
-        return object;
+      if (object?.type === type && !ids.has(object.id)) {
+        ids.add(object.id);
       }
     }
+  }
+
+  return ids;
+}
+
+class SizedMap<T> {
+  private readonly objectById: Map<string, T[]> = new Map([]);
+
+  constructor(private readonly size: number) {}
+
+  get(id: string): T[] {
+    return this.objectById.get(id) ?? [];
+  }
+
+  add(id: string, object: T): void {
+    this.objectById.set(id, [...this.get(id), object].slice(-this.size));
   }
 }
