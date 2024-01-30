@@ -16,7 +16,12 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
     RenderFrameObjectType.Spaceship
   );
 
+  const bulletsIds = findObjectIdsByType(frames, RenderFrameObjectType.Bullet);
+
   const lastSpaceships: SizedMap<RenderFrameObject> = new SizedMap(
+    LAST_FRAMES_COUNT
+  );
+  const lastBullets: SizedMap<RenderFrameObject> = new SizedMap(
     LAST_FRAMES_COUNT
   );
 
@@ -36,6 +41,12 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
           );
 
           return [...flames, object];
+        }
+
+        if (bulletsIds.has(object.id)) {
+          lastBullets.add(object.id, object);
+
+          return [createBulletHighlight(object), object];
         }
 
         return object;
@@ -83,6 +94,20 @@ function createFlame(
       opacity: Math.pow(sizeFactor, 3),
       color: target.meta.color,
     },
+  };
+}
+
+function createBulletHighlight(target: RenderFrameObject): RenderFrameObject {
+  const size = target.width * 2;
+
+  return {
+    id: v4(),
+    x: target.x,
+    y: target.y,
+    width: size,
+    height: size,
+    rotation: target.rotation,
+    type: RenderFrameObjectType.Highlight,
   };
 }
 

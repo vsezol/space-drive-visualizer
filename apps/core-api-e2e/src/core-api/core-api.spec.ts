@@ -15,6 +15,7 @@ import { v4 } from 'uuid';
 // 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
 
 const playersIds = [v4(), v4(), v4(), v4()];
+const bulletsIds = [v4(), v4(), v4(), v4()];
 
 const createTestRequestBody = () => ({
   scene: {
@@ -72,17 +73,17 @@ const createTestRequestBody = () => ({
         },
       },
       {
-        id: v4(),
-        x: 10 + index * 5,
-        y: 10 + index * 5,
-        rotation: 0,
+        id: bulletsIds[0],
+        x: 10 + index,
+        y: 10 + index,
+        rotation: -45,
         width: 10,
         height: 10,
         type: 'bullet',
       },
       {
-        id: v4(),
-        x: 500 + index * 5,
+        id: bulletsIds[1],
+        x: 500,
         y: 250 + index,
         rotation: 0,
         width: 10,
@@ -90,19 +91,19 @@ const createTestRequestBody = () => ({
         type: 'bullet',
       },
       {
-        id: v4(),
-        x: 500 + index * 5,
-        y: 250 - index * 5,
-        rotation: 0,
+        id: bulletsIds[2],
+        x: 500 + index,
+        y: 250,
+        rotation: 90,
         width: 10,
         height: 10,
         type: 'bullet',
       },
       {
-        id: v4(),
-        x: 500 - index * 5,
-        y: 250 - index * 5,
-        rotation: 0,
+        id: bulletsIds[3],
+        x: 500 - index,
+        y: 250,
+        rotation: 90,
         width: 10,
         height: 10,
         type: 'bullet',

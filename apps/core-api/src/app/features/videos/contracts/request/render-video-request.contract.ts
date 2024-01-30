@@ -38,4 +38,5 @@ export enum RenderFrameObjectType {
   Bullet = 'bullet',
   Barrier = 'barrier',
   Flame = 'flame',
+  Highlight = 'highlight',
 }

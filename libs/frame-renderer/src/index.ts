@@ -1,6 +1,7 @@
 export { BaseObject } from './lib/classes/abstract/base-object.abstract';
 export { Circle } from './lib/classes/circle.class';
 export { FrameRenderer } from './lib/classes/frame-renderer.class';
+export { Highlight } from './lib/classes/highlight.class';
 export { Rectangle } from './lib/classes/rectangle.class';
 export { SpriteObject } from './lib/classes/sprite-object.class';
 export {

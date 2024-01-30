@@ -2,6 +2,7 @@ import {
   BaseObject,
   Circle,
   Frame,
+  Highlight,
   Rectangle,
   SpriteObject,
 } from '@space-drive-visualizer/frame-renderer';
@@ -31,6 +32,8 @@ function mapRenderFrameObjectToBaseObject(
       return mapBarrierToSpriteObject(object);
     case RenderFrameObjectType.Flame:
       return mapFlameToCircleObject(object);
+    case RenderFrameObjectType.Highlight:
+      return mapHighlightToHighlight(object);
     default:
       return mapObjectToRectangle(object);
   }
@@ -90,6 +93,16 @@ function mapBulletToCircle(object: RenderFrameObject): Circle {
     y: object.y,
     radius: object.width,
     color: 'purple',
+  });
+}
+
+function mapHighlightToHighlight(object: RenderFrameObject): Highlight {
+  return new Highlight({
+    x: object.x,
+    y: object.y,
+    radius: object.width,
+    rotation: object.rotation,
+    color: 'green',
   });
 }
 

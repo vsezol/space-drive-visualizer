@@ -6,6 +6,8 @@ import {
 } from '../contracts/frame-renderer.contracts';
 import { CircleRenderer } from './circle-renderer.class';
 import { Circle } from './circle.class';
+import { Highlight } from './highlight.class';
+import { HighlightRenderer } from './hightlight-renderer.class';
 import { RectangleRenderer } from './rectangle-renderer.class';
 import { Rectangle } from './rectangle.class';
 import { SpriteObjectRenderer } from './sprite-object-renderer.class';
@@ -42,6 +44,10 @@ export class FrameRenderer {
             this.options.sprites[object.spriteName],
             this.options.frameIndex
           );
+        }
+
+        if (object instanceof Highlight) {
+          return new HighlightRenderer(this.context, object);
         }
 
         throw new Error(`[FrameRenderer] Renderer for object not found!`);
