@@ -1,7 +1,4 @@
-import {
-  RenderFrame,
-  RenderObject,
-} from '@space-drive-visualizer/videos-contracts';
+import { RenderFrame } from '@space-drive-visualizer/videos-contracts';
 import {
   BulletDto,
   FlameDto,
@@ -10,6 +7,7 @@ import {
 } from '../dto/render-video-request.dto';
 import { calcCircleX } from './calc-circle-x.function';
 import { calcCircleY } from './calc-circle-y.function';
+import { toRadians } from './to-radians.function';
 
 const LAST_FRAMES_COUNT = 27;
 
@@ -17,9 +15,8 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
   const lastSpaceships: SizedMap<SpaceshipDto> = new SizedMap(
     LAST_FRAMES_COUNT
   );
-  const lastBullets: SizedMap<RenderObject> = new SizedMap(LAST_FRAMES_COUNT);
 
-  return frames.map((frame) => {
+  return frames.map((frame, frameIndex) => {
     return {
       objects: frame.objects.flatMap((object) => {
         if (object instanceof SpaceshipDto) {
@@ -34,9 +31,7 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
         }
 
         if (object instanceof BulletDto) {
-          lastBullets.add(object.id, object);
-
-          return [createBulletHighlight(object), object];
+          return [createBulletHighlight(object, frameIndex), object];
         }
 
         return object;
@@ -76,14 +71,18 @@ function createSpaceshipFlame(
   });
 }
 
-function createBulletHighlight(target: BulletDto): HighlightDto {
-  const size = target.radius * 2;
+function createBulletHighlight(
+  target: BulletDto,
+  frameIndex: number
+): HighlightDto {
+  const radius = target.radius * 2;
+  const alpha = 0.25 * Math.sin(10 * toRadians(frameIndex)) + 0.75;
 
   return HighlightDto.create({
     x: target.x,
     y: target.y,
-    radius: size,
-    color: [...target.color, 1.0],
+    radius,
+    color: [...target.color, alpha],
   });
 }
 
@@ -100,20 +99,3 @@ class SizedMap<T> {
     this.objectById.set(id, [...this.get(id), object].slice(-this.size));
   }
 }
-
-// function findObjectIdsByType(
-//   frames: RenderFrame[],
-//   type: RenderObjectType
-// ): Set<string> {
-//   const ids: Set<string> = new Set();
-
-//   for (const frame of frames) {
-//     for (const object of frame.objects) {
-//       if (object?.type === type && !ids.has(object.id)) {
-//         ids.add(object.id);
-//       }
-//     }
-//   }
-
-//   return ids;
-// }

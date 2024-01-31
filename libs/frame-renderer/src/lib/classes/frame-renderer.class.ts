@@ -41,8 +41,7 @@ export class FrameRenderer {
           return new SpriteObjectRenderer(
             this.context,
             object,
-            this.options.sprites[object.spriteName],
-            this.options.frameIndex
+            this.options.sprites[object.spriteName]
           );
         }
 

@@ -22,7 +22,39 @@ import { v4 } from 'uuid';
 // 6000 frames 60fps 1.0 quality - 19.554s, 4mb
 // 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
 
-const createTestRequestBody = (): RenderVideoRequest => {
+function* bulletShooter(
+  times: number,
+  width: number,
+  height: number
+): Generator<Bullet[], undefined, [number, number]> {
+  let bullets: Bullet[] = [];
+  let lastPoint: [number, number];
+
+  for (let i = 0; i < times; i++) {
+    const [x, y] = yield bullets;
+
+    if (Array.isArray(lastPoint)) {
+      const deltaX = x - lastPoint[0];
+      const deltaY = y - lastPoint[1];
+
+      bullets = bullets
+        .map((item) => ({
+          ...item,
+          x: item.x + deltaX * 4,
+          y: item.y + deltaY * 4,
+        }))
+        .filter(({ x, y }) => x <= width && x >= 0 && y <= height && y >= 0);
+    }
+
+    lastPoint = [x, y];
+
+    if (i % 20 === 0) {
+      bullets.push(createBullet(x, y, [255, 0, 255]));
+    }
+  }
+}
+
+const createTestRequestBody = (framesCount: number): RenderVideoRequest => {
   const bullets = [
     createBullet(10, 10, [64, 255, 76]),
     createBullet(500, 250, [0, 200, 76]),
@@ -69,14 +101,30 @@ const createTestRequestBody = (): RenderVideoRequest => {
       height: 125,
       color: [255, 0, 255],
     }),
+    createSpaceship({
+      x: 700,
+      y: 200,
+      rotation: 0,
+      width: 75,
+      height: 75,
+      color: [255, 0, 255],
+    }),
   ];
+
+  const shooter = bulletShooter(framesCount - 1, 1000, 500);
+
+  const getShoots = (x: number, y: number) => {
+    const result = shooter.next([x, y]);
+
+    return result.value ?? [];
+  };
 
   return {
     scene: {
       width: 1000,
       height: 500,
     },
-    frames: new Array(600).fill('').map((_, index) => ({
+    frames: new Array(framesCount).fill('').map((_, index) => ({
       objects: [
         {
           ...spaceships[0],
@@ -102,6 +150,16 @@ const createTestRequestBody = (): RenderVideoRequest => {
           y: spaceships[3].y - 200 * Math.sin((index * Math.PI) / 180),
           rotation: index,
         },
+        ...getShoots(
+          spaceships[4].x - 100 * Math.cos((index * 0.5 * Math.PI) / 180),
+          spaceships[4].y - 100 * Math.sin((index * 0.5 * Math.PI) / 180)
+        ),
+        {
+          ...spaceships[4],
+          x: spaceships[4].x - 100 * Math.cos((index * 0.5 * Math.PI) / 180),
+          y: spaceships[4].y - 100 * Math.sin((index * 0.5 * Math.PI) / 180),
+          rotation: spaceships[4].rotation + index * 0.5,
+        },
         {
           ...bullets[0],
           x: bullets[0].x + index,
@@ -109,11 +167,11 @@ const createTestRequestBody = (): RenderVideoRequest => {
         },
         {
           ...bullets[1],
-          y: bullets[1].y + index,
+          y: bullets[1].y + index * 2,
         },
         {
           ...bullets[2],
-          x: bullets[2].x + index,
+          x: bullets[2].x + index * 2,
         },
         {
           ...bullets[3],
@@ -177,7 +235,7 @@ describe('GET /api', () => {
       try {
         res = await axios.post<Stream>(
           `/api/videos/render`,
-          createTestRequestBody(),
+          createTestRequestBody(600),
           {
             responseType: 'stream',
           }

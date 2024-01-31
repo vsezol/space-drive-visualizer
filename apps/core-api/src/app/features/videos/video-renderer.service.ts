@@ -22,12 +22,11 @@ export class VideoRendererService {
 
     const streams = addVisualObjects(data.frames)
       .map(mapRenderFrameToFrame)
-      .map((frame, frameIndex) => {
+      .map((frame) => {
         // TODO create one-time initialization
         const renderer = new FrameRenderer({
           width: data.scene.width,
           height: data.scene.height,
-          frameIndex,
           sprites,
         });
 

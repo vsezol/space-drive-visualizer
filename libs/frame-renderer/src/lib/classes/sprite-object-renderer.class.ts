@@ -8,8 +8,7 @@ export class SpriteObjectRenderer extends ObjectRenderer<SpriteObject> {
   constructor(
     context: CanvasRenderingContext2D,
     object: SpriteObject,
-    private readonly sprite: Sprite,
-    private readonly frameIndex: number
+    private readonly sprite: Sprite
   ) {
     super(context, object);
   }
@@ -17,7 +16,7 @@ export class SpriteObjectRenderer extends ObjectRenderer<SpriteObject> {
   override render(): void {
     const spriteRenderer = new SpriteCalculator(this.sprite);
 
-    const index = Math.trunc(this.frameIndex / 2);
+    const index = Math.trunc(this.object.frameIndex / 2);
 
     const { source, target } = spriteRenderer.calcDrawImageOptions({
       index,

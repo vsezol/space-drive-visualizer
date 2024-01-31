@@ -3,9 +3,7 @@ import { Highlight } from './highlight.class';
 
 export class HighlightRenderer extends ObjectRenderer<Highlight> {
   override render(): void {
-    const { x, y, radius } = this.object;
-
-    const color = '#' + Math.random().toString(16).slice(-6);
+    const { x, y, radius, color } = this.object;
 
     const gradient = this.context.createRadialGradient(
       x,

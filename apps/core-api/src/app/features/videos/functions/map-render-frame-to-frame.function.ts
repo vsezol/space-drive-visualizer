@@ -20,16 +20,26 @@ import {
   HighlightDto,
   SpaceshipDto,
 } from '../dto/render-video-request.dto';
+import { stringifyRGB } from './stringify-rgb.function';
+import { stringifyRGBA } from './stringify-rgba.function';
 
-export function mapRenderFrameToFrame(frame: RenderFrame): Frame {
+export function mapRenderFrameToFrame(
+  frame: RenderFrame,
+  frameIndex: number
+): Frame {
   return {
-    objects: frame.objects.map(mapRenderFrameObjectToBaseObject),
+    objects: frame.objects.map((obj) =>
+      mapRenderFrameObjectToBaseObject(obj, frameIndex)
+    ),
   };
 }
 
-function mapRenderFrameObjectToBaseObject(object: RenderObject): BaseObject {
+function mapRenderFrameObjectToBaseObject(
+  object: RenderObject,
+  frameIndex: number
+): BaseObject {
   if (object instanceof SpaceshipDto) {
-    return mapSpaceshipToSpriteObject(object);
+    return mapSpaceshipToSpriteObject(object, frameIndex);
   }
 
   if (object instanceof BulletDto) {
@@ -37,7 +47,7 @@ function mapRenderFrameObjectToBaseObject(object: RenderObject): BaseObject {
   }
 
   if (object instanceof BarrierDto) {
-    return mapBarrierToSpriteObject(object);
+    return mapBarrierToSpriteObject(object, frameIndex);
   }
 
   if (object instanceof FlameDto) {
@@ -49,7 +59,10 @@ function mapRenderFrameObjectToBaseObject(object: RenderObject): BaseObject {
   }
 }
 
-function mapSpaceshipToSpriteObject(object: SpaceshipDto): SpriteObject {
+function mapSpaceshipToSpriteObject(
+  object: SpaceshipDto,
+  frameIndex: number
+): SpriteObject {
   return new SpriteObject({
     x: object.x,
     y: object.y,
@@ -57,6 +70,7 @@ function mapSpaceshipToSpriteObject(object: SpaceshipDto): SpriteObject {
     height: object.height,
     rotation: object.rotation,
     spriteName: SpriteName.Spaceship,
+    frameIndex,
   });
 }
 
@@ -79,7 +93,7 @@ function mapBulletToCircle(object: Bullet): Circle {
     x: object.x,
     y: object.y,
     radius: object.radius,
-    color: 'purple',
+    color: stringifyRGB(object.color),
   });
 }
 
@@ -88,11 +102,14 @@ function mapHighlightToHighlight(object: HighlightDto): Highlight {
     x: object.x,
     y: object.y,
     radius: object.radius,
-    color: 'green',
+    color: stringifyRGBA(object.color),
   });
 }
 
-function mapBarrierToSpriteObject(object: Barrier): SpriteObject {
+function mapBarrierToSpriteObject(
+  object: Barrier,
+  frameIndex: number
+): SpriteObject {
   return new SpriteObject({
     x: object.x,
     y: object.y,
@@ -100,5 +117,6 @@ function mapBarrierToSpriteObject(object: Barrier): SpriteObject {
     height: object.height,
     rotation: 0,
     spriteName: SpriteName.BarrierLeft,
+    frameIndex,
   });
 }
