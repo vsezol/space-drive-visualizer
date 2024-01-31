@@ -6,7 +6,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
-import { RenderVideoRequestDto } from './dto/request/render-video-request.dto';
+import { RenderVideoRequestDto } from './dto/render-video-request.dto';
 import { VideoRendererService } from './video-renderer.service';
 
 @Controller('videos')
@@ -22,7 +22,9 @@ export class VideosController {
     },
   })
   @ApiProduces('video/mp4')
-  async visualize(@Body(new ValidationPipe()) body: RenderVideoRequestDto) {
+  async visualize(
+    @Body(new ValidationPipe({ transform: true })) body: RenderVideoRequestDto
+  ) {
     const videoFileStream = await this.videoRendererService.render(body);
 
     return new StreamableFile(videoFileStream);

@@ -1,3 +1,11 @@
+import {
+  Barrier,
+  Bullet,
+  ColorRGB,
+  RenderObjectType,
+  RenderVideoRequest,
+  Spaceship,
+} from '@space-drive-visualizer/videos-contracts';
 import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
@@ -14,131 +22,151 @@ import { v4 } from 'uuid';
 // 6000 frames 60fps 1.0 quality - 19.554s, 4mb
 // 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
 
-const playersIds = [v4(), v4(), v4(), v4()];
-const bulletsIds = [v4(), v4(), v4(), v4()];
+const createTestRequestBody = (): RenderVideoRequest => {
+  const bullets = [
+    createBullet(10, 10, [64, 255, 76]),
+    createBullet(500, 250, [0, 200, 76]),
+    createBullet(500, 250, [0, 255, 50]),
+    createBullet(500, 250, [255, 255, 0]),
+  ];
 
-const createTestRequestBody = () => ({
-  scene: {
-    width: 1000,
-    height: 500,
-  },
-  frames: new Array(600).fill('').map((_, index) => ({
-    objects: [
-      {
-        id: playersIds[0],
-        x: 530 - 200 * Math.cos((-index * 0.5 * Math.PI) / 180),
-        y: 275 - 200 * Math.sin((-index * 0.5 * Math.PI) / 180),
-        rotation: 180 - index * 0.5,
-        width: 95,
-        height: 95,
-        type: 'spaceship',
-        meta: {
-          color: [255, 201, 129],
+  const barriers = [
+    createBarrier(800, 400, 100),
+    createBarrier(250, 250, 125),
+    createBarrier(800, 100, 150),
+  ];
+
+  const spaceships = [
+    createSpaceship({
+      x: 530,
+      y: 275,
+      rotation: 180,
+      width: 95,
+      height: 95,
+      color: [255, 201, 129],
+    }),
+    createSpaceship({
+      x: 550,
+      y: 300,
+      rotation: 180,
+      width: 50,
+      height: 50,
+      color: [64, 255, 76],
+    }),
+    createSpaceship({
+      x: 250,
+      y: 250,
+      rotation: 0,
+      width: 95,
+      height: 95,
+      color: [64, 255, 255],
+    }),
+    createSpaceship({
+      x: 100,
+      y: 100,
+      rotation: 0,
+      width: 125,
+      height: 125,
+      color: [255, 0, 255],
+    }),
+  ];
+
+  return {
+    scene: {
+      width: 1000,
+      height: 500,
+    },
+    frames: new Array(600).fill('').map((_, index) => ({
+      objects: [
+        {
+          ...spaceships[0],
+          x: 530 - 200 * Math.cos((-index * 0.5 * Math.PI) / 180),
+          y: 275 - 200 * Math.sin((-index * 0.5 * Math.PI) / 180),
+          rotation: 180 - index * 0.5,
         },
-      },
-      {
-        id: playersIds[1],
-        x: 550 - 100 * Math.cos((-index * 2 * Math.PI) / 180),
-        y: 300 - 100 * Math.sin((-index * 2 * Math.PI) / 180),
-        rotation: 180 - index * 2,
-        width: 50,
-        height: 50,
-        type: 'spaceship',
-        meta: {
-          color: [64, 255, 76],
+        {
+          ...spaceships[1],
+          x: spaceships[1].x - 100 * Math.cos((-index * 2 * Math.PI) / 180),
+          y: spaceships[1].y - 100 * Math.sin((-index * 2 * Math.PI) / 180),
+          rotation: spaceships[1].rotation - index * 2,
         },
-      },
-      {
-        id: playersIds[2],
-        x: 250 - 200 * Math.cos((index * Math.PI) / 180),
-        y: 250 - 200 * Math.sin((index * Math.PI) / 180),
-        rotation: index,
-        width: 95,
-        height: 95,
-        type: 'spaceship',
-        meta: {
-          color: [64, 255, 255],
+        {
+          ...spaceships[2],
+          x: spaceships[2].x - 200 * Math.cos((index * Math.PI) / 180),
+          y: spaceships[2].y - 200 * Math.sin((index * Math.PI) / 180),
+          rotation: index,
         },
-      },
-      {
-        id: playersIds[3],
-        x: 100 - 200 * Math.cos((index * Math.PI) / 180),
-        y: 100 - 200 * Math.sin((index * Math.PI) / 180),
-        rotation: index,
-        width: 125,
-        height: 125,
-        type: 'spaceship',
-        meta: {
-          color: [255, 0, 255],
+        {
+          ...spaceships[3],
+          x: spaceships[3].x - 200 * Math.cos((index * Math.PI) / 180),
+          y: spaceships[3].y - 200 * Math.sin((index * Math.PI) / 180),
+          rotation: index,
         },
-      },
-      {
-        id: bulletsIds[0],
-        x: 10 + index,
-        y: 10 + index,
-        rotation: -45,
-        width: 10,
-        height: 10,
-        type: 'bullet',
-      },
-      {
-        id: bulletsIds[1],
-        x: 500,
-        y: 250 + index,
-        rotation: 0,
-        width: 10,
-        height: 10,
-        type: 'bullet',
-      },
-      {
-        id: bulletsIds[2],
-        x: 500 + index,
-        y: 250,
-        rotation: 90,
-        width: 10,
-        height: 10,
-        type: 'bullet',
-      },
-      {
-        id: bulletsIds[3],
-        x: 500 - index,
-        y: 250,
-        rotation: 90,
-        width: 10,
-        height: 10,
-        type: 'bullet',
-      },
-      {
-        id: v4(),
-        x: 800,
-        y: 400,
-        rotation: index * 2,
-        width: 100,
-        height: 100,
-        type: 'barrier',
-      },
-      {
-        id: v4(),
-        x: 250,
-        y: 250,
-        rotation: index,
-        width: 125,
-        height: 125,
-        type: 'barrier',
-      },
-      {
-        id: v4(),
-        x: 800,
-        y: 100,
-        rotation: -index,
-        width: 150,
-        height: 150,
-        type: 'barrier',
-      },
-    ],
-  })),
-  frameRate: 60,
-});
+        {
+          ...bullets[0],
+          x: bullets[0].x + index,
+          y: bullets[0].y + index,
+        },
+        {
+          ...bullets[1],
+          y: bullets[1].y + index,
+        },
+        {
+          ...bullets[2],
+          x: bullets[2].x + index,
+        },
+        {
+          ...bullets[3],
+          x: bullets[3].x - index,
+        },
+        ...barriers,
+      ],
+    })),
+    frameRate: 60,
+  };
+};
+
+function createSpaceship({
+  x,
+  y,
+  rotation,
+  width,
+  height,
+  color,
+}: Omit<Spaceship, 'id' | 'type'>): Spaceship {
+  return {
+    id: v4(),
+    x,
+    y,
+    rotation,
+    width,
+    height,
+    type: RenderObjectType.Spaceship,
+    color,
+  };
+}
+
+function createBullet(x: number, y: number, color: ColorRGB): Bullet {
+  return {
+    id: v4(),
+    x,
+    y,
+    radius: 10,
+    type: RenderObjectType.Bullet,
+    color,
+  };
+}
+
+function createBarrier(x: number, y: number, size: number): Barrier {
+  return {
+    id: v4(),
+    x,
+    y,
+    width: size,
+    height: size,
+    type: RenderObjectType.Barrier,
+  };
+}
 
 describe('GET /api', () => {
   it(

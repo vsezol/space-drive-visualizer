@@ -1,41 +1,31 @@
-import { v4 } from 'uuid';
 import {
   RenderFrame,
-  RenderFrameObject,
-  RenderFrameObjectType,
-} from '../contracts/request/render-video-request.contract';
+  RenderObject,
+} from '@space-drive-visualizer/videos-contracts';
+import {
+  BulletDto,
+  FlameDto,
+  HighlightDto,
+  SpaceshipDto,
+} from '../dto/render-video-request.dto';
 import { calcCircleX } from './calc-circle-x.function';
 import { calcCircleY } from './calc-circle-y.function';
-import { isSpaceshipMeta } from './is-spaceship-meta.function';
 
 const LAST_FRAMES_COUNT = 27;
 
 export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
-  const spaceshipsIds = findObjectIdsByType(
-    frames,
-    RenderFrameObjectType.Spaceship
-  );
-
-  const bulletsIds = findObjectIdsByType(frames, RenderFrameObjectType.Bullet);
-
-  const lastSpaceships: SizedMap<RenderFrameObject> = new SizedMap(
+  const lastSpaceships: SizedMap<SpaceshipDto> = new SizedMap(
     LAST_FRAMES_COUNT
   );
-  const lastBullets: SizedMap<RenderFrameObject> = new SizedMap(
-    LAST_FRAMES_COUNT
-  );
-
-  if (spaceshipsIds.size < 0) {
-    return frames;
-  }
+  const lastBullets: SizedMap<RenderObject> = new SizedMap(LAST_FRAMES_COUNT);
 
   return frames.map((frame) => {
     return {
       objects: frame.objects.flatMap((object) => {
-        if (spaceshipsIds.has(object.id)) {
+        if (object instanceof SpaceshipDto) {
           lastSpaceships.add(object.id, object);
 
-          const flames = createFlamesForObjects(
+          const flames = createFlamesForSpaceships(
             lastSpaceships.get(object.id),
             LAST_FRAMES_COUNT
           );
@@ -43,7 +33,7 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
           return [...flames, object];
         }
 
-        if (bulletsIds.has(object.id)) {
+        if (object instanceof BulletDto) {
           lastBullets.add(object.id, object);
 
           return [createBulletHighlight(object), object];
@@ -55,23 +45,19 @@ export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
   });
 }
 
-function createFlamesForObjects(
-  lastObjects: RenderFrameObject[],
+function createFlamesForSpaceships(
+  lastObjects: SpaceshipDto[],
   size: number
-): RenderFrameObject[] {
+): FlameDto[] {
   return lastObjects.map((object, index) =>
-    createFlame(object, index / size + 0)
+    createSpaceshipFlame(object, index / size + 0)
   );
 }
 
-function createFlame(
-  target: RenderFrameObject,
+function createSpaceshipFlame(
+  target: SpaceshipDto,
   sizeFactor: number
-): RenderFrameObject {
-  if (!isSpaceshipMeta(target.meta)) {
-    return;
-  }
-
+): FlameDto {
   const originalSize = target.width / 12;
   const size = originalSize * sizeFactor;
 
@@ -82,50 +68,23 @@ function createFlame(
 
   const withVariance = (x: number) => x + Math.random() * originalSize;
 
-  return {
-    id: v4(),
+  return FlameDto.create({
     x: calcCircleX(target.x, withVariance(distance), angle),
     y: calcCircleY(target.y, withVariance(distance), angle),
-    width: size,
-    height: size,
-    rotation: 0,
-    type: RenderFrameObjectType.Flame,
-    meta: {
-      opacity: Math.pow(sizeFactor, 3),
-      color: target.meta.color,
-    },
-  };
+    radius: size,
+    color: [...target.color, Math.pow(sizeFactor, 3)],
+  });
 }
 
-function createBulletHighlight(target: RenderFrameObject): RenderFrameObject {
-  const size = target.width * 2;
+function createBulletHighlight(target: BulletDto): HighlightDto {
+  const size = target.radius * 2;
 
-  return {
-    id: v4(),
+  return HighlightDto.create({
     x: target.x,
     y: target.y,
-    width: size,
-    height: size,
-    rotation: target.rotation,
-    type: RenderFrameObjectType.Highlight,
-  };
-}
-
-function findObjectIdsByType(
-  frames: RenderFrame[],
-  type: RenderFrameObjectType
-): Set<string> {
-  const ids: Set<string> = new Set();
-
-  for (const frame of frames) {
-    for (const object of frame.objects) {
-      if (object?.type === type && !ids.has(object.id)) {
-        ids.add(object.id);
-      }
-    }
-  }
-
-  return ids;
+    radius: size,
+    color: [...target.color, 1.0],
+  });
 }
 
 class SizedMap<T> {
@@ -141,3 +100,20 @@ class SizedMap<T> {
     this.objectById.set(id, [...this.get(id), object].slice(-this.size));
   }
 }
+
+// function findObjectIdsByType(
+//   frames: RenderFrame[],
+//   type: RenderObjectType
+// ): Set<string> {
+//   const ids: Set<string> = new Set();
+
+//   for (const frame of frames) {
+//     for (const object of frame.objects) {
+//       if (object?.type === type && !ids.has(object.id)) {
+//         ids.add(object.id);
+//       }
+//     }
+//   }
+
+//   return ids;
+// }

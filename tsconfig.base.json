@@ -22,6 +22,9 @@
       "@space-drive-visualizer/sprite": ["libs/sprite/src/index.ts"],
       "@space-drive-visualizer/video-converter": [
         "libs/video-converter/src/index.ts"
+      ],
+      "@space-drive-visualizer/videos-contracts": [
+        "libs/videos-contracts/src/index.ts"
       ]
     }
   },
