@@ -24,7 +24,7 @@
     },
     "build-docker": {
       "defaultConfiguration": "production",
-      "command": "docker build -f apps/core-api/Dockerfile . -t vsezol/space-drive-visualizer-api",
+      "command": "docker build -f apps/core-api/Dockerfile . -t vsezol/space-drive-visualizer",
       "configurations": {
         "development": {},
         "production": {}
