@@ -5,6 +5,7 @@ import {
   Highlight,
   SpriteObject,
 } from '@space-drive-visualizer/frame-renderer';
+import { stringifyRGB, stringifyRGBA } from '@space-drive-visualizer/utils';
 import {
   Barrier,
   Bullet,
@@ -20,8 +21,6 @@ import {
   HighlightDto,
   SpaceshipDto,
 } from '../dto/render-video-request.dto';
-import { stringifyRGB } from './stringify-rgb.function';
-import { stringifyRGBA } from './stringify-rgba.function';
 
 export function mapRenderFrameToFrame(
   frame: RenderFrame,

@@ -20,6 +20,7 @@
         "libs/frame-renderer/src/index.ts"
       ],
       "@space-drive-visualizer/sprite": ["libs/sprite/src/index.ts"],
+      "@space-drive-visualizer/utils": ["libs/utils/src/index.ts"],
       "@space-drive-visualizer/video-converter": [
         "libs/video-converter/src/index.ts"
       ],

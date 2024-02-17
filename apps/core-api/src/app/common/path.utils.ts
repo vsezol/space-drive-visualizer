@@ -1,5 +1,5 @@
+import { getUuid } from '@space-drive-visualizer/utils';
 import { join } from 'path';
-import { v4 } from 'uuid';
 
 export const getLocalPath = (path: string = ''): string =>
   join(process.cwd(), 'apps/core-api/', path);
@@ -7,6 +7,6 @@ export const getLocalPath = (path: string = ''): string =>
 export const getAssetsDirPath = (): string => getLocalPath('src/assets');
 
 export const getUniqTempDirPath = (): string => {
-  const dirName = v4();
+  const dirName = getUuid();
   return join(process.cwd(), 'apps/core-api/temp', dirName);
 };

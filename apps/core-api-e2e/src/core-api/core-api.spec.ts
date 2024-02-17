@@ -1,3 +1,4 @@
+import { getUuid } from '@space-drive-visualizer/utils';
 import {
   Barrier,
   Bullet,
@@ -10,7 +11,6 @@ import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { Stream } from 'stream';
-import { v4 } from 'uuid';
 
 // Single Thread PNG
 // 600 frames 60fps - 16.089s
@@ -193,7 +193,7 @@ function createSpaceship({
   color,
 }: Omit<Spaceship, 'id' | 'type'>): Spaceship {
   return {
-    id: v4(),
+    id: getUuid(),
     x,
     y,
     rotation,
@@ -206,7 +206,7 @@ function createSpaceship({
 
 function createBullet(x: number, y: number, color: ColorRGB): Bullet {
   return {
-    id: v4(),
+    id: getUuid(),
     x,
     y,
     radius: 10,
@@ -217,7 +217,7 @@ function createBullet(x: number, y: number, color: ColorRGB): Bullet {
 
 function createBarrier(x: number, y: number, size: number): Barrier {
   return {
-    id: v4(),
+    id: getUuid(),
     x,
     y,
     width: size,

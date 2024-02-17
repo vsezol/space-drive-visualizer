@@ -1,20 +1,21 @@
+import {
+  calcCircleX,
+  calcCircleY,
+  toRadians,
+} from '@space-drive-visualizer/utils';
 import { RenderFrame } from '@space-drive-visualizer/videos-contracts';
+import { SizedMap } from '../classes/sized-map.class';
 import {
   BulletDto,
   FlameDto,
   HighlightDto,
   SpaceshipDto,
 } from '../dto/render-video-request.dto';
-import { calcCircleX } from './calc-circle-x.function';
-import { calcCircleY } from './calc-circle-y.function';
-import { toRadians } from './to-radians.function';
 
 const LAST_FRAMES_COUNT = 27;
 
 export function addVisualObjects(frames: RenderFrame[]): RenderFrame[] {
-  const lastSpaceships: SizedMap<SpaceshipDto> = new SizedMap(
-    LAST_FRAMES_COUNT
-  );
+  const lastSpaceships = new SizedMap<string, SpaceshipDto>(LAST_FRAMES_COUNT);
 
   return frames.map((frame, frameIndex) => {
     return {
@@ -84,18 +85,4 @@ function createBulletHighlight(
     radius,
     color: [...target.color, alpha],
   });
-}
-
-class SizedMap<T> {
-  private readonly objectById: Map<string, T[]> = new Map([]);
-
-  constructor(private readonly size: number) {}
-
-  get(id: string): T[] {
-    return this.objectById.get(id) ?? [];
-  }
-
-  add(id: string, object: T): void {
-    this.objectById.set(id, [...this.get(id), object].slice(-this.size));
-  }
 }

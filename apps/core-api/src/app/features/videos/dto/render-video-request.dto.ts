@@ -1,3 +1,4 @@
+import { getUuid } from '@space-drive-visualizer/utils';
 import {
   Barrier,
   Bullet,
@@ -28,7 +29,6 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { v4 } from 'uuid';
 
 export class RenderSceneDto implements RenderScene {
   @IsInt()
@@ -108,7 +108,7 @@ export class FlameDto extends RenderObjectDto implements Flame {
 
   static create(options: Omit<FlameDto, 'id' | 'type'>): FlameDto {
     return plainToInstance<FlameDto, FlameDto>(FlameDto, {
-      id: v4(),
+      id: getUuid(),
       type: RenderObjectType.Flame,
       ...options,
     });
@@ -128,7 +128,7 @@ export class HighlightDto extends RenderObjectDto implements Highlight {
 
   static create(options: Omit<HighlightDto, 'id' | 'type'>): HighlightDto {
     return plainToInstance<HighlightDto, HighlightDto>(HighlightDto, {
-      id: v4(),
+      id: getUuid(),
       type: RenderObjectType.Highlight,
       ...options,
     });
