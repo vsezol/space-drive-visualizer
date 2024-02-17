@@ -1,5 +1,5 @@
-import { ObjectRenderer } from './abstract/object-renderer.abstract';
-import { Circle } from './circle.class';
+import { ObjectRenderer } from '../abstract/object-renderer';
+import { Circle } from './circle';
 
 export class CircleRenderer extends ObjectRenderer<Circle> {
   override render(): void {

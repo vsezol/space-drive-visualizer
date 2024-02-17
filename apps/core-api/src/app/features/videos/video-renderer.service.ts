@@ -8,20 +8,28 @@ import { join } from 'path';
 import { lastValueFrom } from 'rxjs';
 import { Readable } from 'stream';
 import { getUniqTempDirPath } from '../../common/path.utils';
-import { RenderVideoRequestDto } from './dto/render-video-request.dto';
-import { addVisualObjects } from './functions/add-visual-objects.function';
-import { mapRenderFrameToFrame } from './functions/map-render-frame-to-frame.function';
+
+import { RenderRequestDto } from './contracts/render-request.dto';
+import { FramesPreprocessingService } from './frames-preprocessing.service';
+import { RenderRequestMapperService } from './render-request-mapper.service';
 import { SpritesService } from './sprites.service';
 
 @Injectable()
 export class VideoRendererService {
-  constructor(private readonly spritesService: SpritesService) {}
+  constructor(
+    private readonly spritesService: SpritesService,
+    private readonly renderRequestMapperService: RenderRequestMapperService,
+    private readonly framesPreprocessingService: FramesPreprocessingService
+  ) {}
 
-  async render(data: RenderVideoRequestDto): Promise<Readable> {
+  async render(data: RenderRequestDto): Promise<Readable> {
     const sprites = await lastValueFrom(this.spritesService.sprites$);
 
-    const streams = addVisualObjects(data.frames)
-      .map(mapRenderFrameToFrame)
+    const streams = this.framesPreprocessingService
+      .preprocess(data.frames)
+      .map((frame, index) =>
+        this.renderRequestMapperService.toRendererFrame(frame, index)
+      )
       .map((frame) => {
         // TODO create one-time initialization
         const renderer = new FrameRenderer({

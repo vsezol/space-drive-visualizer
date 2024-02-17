@@ -1,8 +1,6 @@
-import { Sprite } from './sprite.contracts';
+import { CreateSpriteOptions, Sprite } from './sprite';
 
-type Options = Omit<Sprite, 'offset'> & Partial<Pick<Sprite, 'offset'>>;
-
-export function createSprite(options: Options): Sprite {
+export function createSprite(options: CreateSpriteOptions): Sprite {
   return {
     source: options.source,
     gap: options.gap,

@@ -4,7 +4,7 @@ import { Image, loadImage } from 'canvas';
 import { join } from 'path';
 import { Observable, defer, forkJoin, map, shareReplay } from 'rxjs';
 import { getAssetsDirPath } from '../../common/path.utils';
-import { SpriteName } from './contracts/sprite-name.enum';
+import { SpriteName } from './contracts/sprite-name';
 
 @Injectable()
 export class SpritesService {

@@ -1,17 +1,14 @@
 import { Canvas, CanvasRenderingContext2D, createCanvas } from 'canvas';
 import { Readable } from 'stream';
-import {
-  Frame,
-  FrameRendererOptions,
-} from '../contracts/frame-renderer.contracts';
-import { CircleRenderer } from './circle-renderer.class';
-import { Circle } from './circle.class';
-import { Highlight } from './highlight.class';
-import { HighlightRenderer } from './hightlight-renderer.class';
-import { RectangleRenderer } from './rectangle-renderer.class';
-import { Rectangle } from './rectangle.class';
-import { SpriteObjectRenderer } from './sprite-object-renderer.class';
-import { SpriteObject } from './sprite-object.class';
+import { Frame, FrameRendererOptions } from './contracts';
+import { Circle } from './objects/circle/circle';
+import { CircleRenderer } from './objects/circle/circle-renderer';
+import { Highlight } from './objects/highlight/highlight';
+import { HighlightRenderer } from './objects/highlight/highlight-renderer';
+import { Rectangle } from './objects/rectangle/rectangle';
+import { RectangleRenderer } from './objects/rectangle/rectangle-renderer';
+import { SpriteObject } from './objects/sprite/sprite-object';
+import { SpriteObjectRenderer } from './objects/sprite/sprite-object-renderer';
 
 export class FrameRenderer {
   private readonly canvas: Canvas;

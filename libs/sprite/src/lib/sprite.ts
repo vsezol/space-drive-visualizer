@@ -18,3 +18,5 @@ export interface SpriteSegment {
   width: number;
   height: number;
 }
+
+export type CreateSpriteOptions = Omit<Sprite, 'offset'> & Partial<Pick<Sprite, 'offset'>>;

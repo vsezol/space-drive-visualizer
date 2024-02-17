@@ -1,4 +1,4 @@
-import { BaseObject } from './abstract/base-object.abstract';
+import { BaseObject } from '../abstract/base-object';
 
 export class Highlight extends BaseObject {
   readonly radius: number;

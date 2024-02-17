@@ -1,4 +1,4 @@
-import { toRadians } from './to-radians.function';
+import { toRadians } from './to-radians';
 
 export const calcCircleX = (
   centerX: number,

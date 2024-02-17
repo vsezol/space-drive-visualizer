@@ -1,10 +1,7 @@
-export { BaseObject } from './lib/classes/abstract/base-object.abstract';
-export { Circle } from './lib/classes/circle.class';
-export { FrameRenderer } from './lib/classes/frame-renderer.class';
-export { Highlight } from './lib/classes/highlight.class';
-export { Rectangle } from './lib/classes/rectangle.class';
-export { SpriteObject } from './lib/classes/sprite-object.class';
-export {
-  Frame,
-  FrameRendererOptions,
-} from './lib/contracts/frame-renderer.contracts';
+export { Frame, FrameRendererOptions } from './lib/contracts';
+export { FrameRenderer } from './lib/frame-renderer';
+export { BaseObject } from './lib/objects/abstract/base-object';
+export { Circle } from './lib/objects/circle/circle';
+export { Highlight } from './lib/objects/highlight/highlight';
+export { Rectangle } from './lib/objects/rectangle/rectangle';
+export { SpriteObject } from './lib/objects/sprite/sprite-object';

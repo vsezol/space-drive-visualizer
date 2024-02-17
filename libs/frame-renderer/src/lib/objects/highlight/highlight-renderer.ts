@@ -1,5 +1,5 @@
-import { ObjectRenderer } from './abstract/object-renderer.abstract';
-import { Highlight } from './highlight.class';
+import { ObjectRenderer } from '../abstract/object-renderer';
+import { Highlight } from './highlight';
 
 export class HighlightRenderer extends ObjectRenderer<Highlight> {
   override render(): void {

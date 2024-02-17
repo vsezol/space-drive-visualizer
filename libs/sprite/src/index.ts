@@ -1,2 +1,2 @@
-export { createSprite } from './lib/create-sprite.function';
-export { Sprite } from './lib/sprite.contracts';
+export { createSprite } from './lib/create-sprite';
+export { CreateSpriteOptions, Sprite } from './lib/sprite';

@@ -1,16 +1,10 @@
 import { Logger } from '@nestjs/common';
 import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
-
-interface RenderVideoOptions {
-  inputPath: string;
-  outputPath: string;
-  frameRate: number;
-  totalCount: number;
-}
+import { ConvertImagesToVideoOptions } from './contracts';
 
 export async function convertImagesToVideo(
-  options: RenderVideoOptions
+  options: ConvertImagesToVideoOptions
 ): Promise<void> {
   const { inputPath, outputPath, frameRate } = options;
 

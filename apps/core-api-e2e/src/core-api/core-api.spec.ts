@@ -2,9 +2,8 @@ import { getUuid } from '@space-drive-visualizer/utils';
 import {
   Barrier,
   Bullet,
-  ColorRGB,
-  RenderObjectType,
-  RenderVideoRequest,
+  ObjectType,
+  RenderRequest,
   Spaceship,
 } from '@space-drive-visualizer/videos-contracts';
 import axios, { AxiosResponse } from 'axios';
@@ -54,7 +53,7 @@ function* bulletShooter(
   }
 }
 
-const createTestRequestBody = (framesCount: number): RenderVideoRequest => {
+const createTestRequestBody = (framesCount: number): RenderRequest => {
   const bullets = [
     createBullet(10, 10, [64, 255, 76]),
     createBullet(500, 250, [0, 200, 76]),
@@ -199,18 +198,22 @@ function createSpaceship({
     rotation,
     width,
     height,
-    type: RenderObjectType.Spaceship,
+    type: ObjectType.Spaceship,
     color,
   };
 }
 
-function createBullet(x: number, y: number, color: ColorRGB): Bullet {
+function createBullet(
+  x: number,
+  y: number,
+  color: [number, number, number]
+): Bullet {
   return {
     id: getUuid(),
     x,
     y,
     radius: 10,
-    type: RenderObjectType.Bullet,
+    type: ObjectType.Bullet,
     color,
   };
 }
@@ -222,7 +225,7 @@ function createBarrier(x: number, y: number, size: number): Barrier {
     y,
     width: size,
     height: size,
-    type: RenderObjectType.Barrier,
+    type: ObjectType.Barrier,
   };
 }
 

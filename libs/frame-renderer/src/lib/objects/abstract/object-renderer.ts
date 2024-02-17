@@ -1,5 +1,5 @@
 import { CanvasRenderingContext2D } from 'canvas';
-import { BaseObject } from './base-object.abstract';
+import { BaseObject } from './base-object';
 
 export abstract class ObjectRenderer<T extends BaseObject> {
   constructor(

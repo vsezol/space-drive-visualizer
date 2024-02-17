@@ -1,16 +1,14 @@
-import { getUuid } from '@space-drive-visualizer/utils';
+import { ColorRGB, ColorRGBA, getUuid } from '@space-drive-visualizer/utils';
 import {
   Barrier,
+  BaseObject,
   Bullet,
-  ColorRGB,
-  ColorRGBA,
   Flame,
+  Frame,
   Highlight,
-  RenderFrame,
-  RenderObject,
-  RenderObjectType,
-  RenderScene,
-  RenderVideoRequest,
+  ObjectType,
+  RenderRequest,
+  Scene,
   Spaceship,
 } from '@space-drive-visualizer/videos-contracts';
 import { Type, plainToInstance } from 'class-transformer';
@@ -30,7 +28,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class RenderSceneDto implements RenderScene {
+export class SceneDto implements Scene {
   @IsInt()
   @IsPositive()
   width: number;
@@ -40,7 +38,7 @@ export class RenderSceneDto implements RenderScene {
   height: number;
 }
 
-export class RenderObjectDto implements RenderObject {
+export class BaseObjectDto implements BaseObject {
   @IsString()
   id: string;
 
@@ -50,11 +48,11 @@ export class RenderObjectDto implements RenderObject {
   @IsNumber()
   y: number;
 
-  @IsEnum(RenderObjectType)
-  type: RenderObjectType;
+  @IsEnum(ObjectType)
+  type: ObjectType;
 }
 
-export class SpaceshipDto extends RenderObjectDto implements Spaceship {
+export class SpaceshipDto extends BaseObjectDto implements Spaceship {
   @IsNumber()
   rotation: number;
 
@@ -73,7 +71,7 @@ export class SpaceshipDto extends RenderObjectDto implements Spaceship {
   color: ColorRGB;
 }
 
-export class BulletDto extends RenderObjectDto implements Bullet {
+export class BulletDto extends BaseObjectDto implements Bullet {
   @IsInt()
   @IsPositive()
   radius: number;
@@ -85,7 +83,7 @@ export class BulletDto extends RenderObjectDto implements Bullet {
   color: ColorRGB;
 }
 
-export class BarrierDto extends RenderObjectDto implements Barrier {
+export class BarrierDto extends BaseObjectDto implements Barrier {
   @IsInt()
   @IsPositive()
   width: number;
@@ -95,7 +93,7 @@ export class BarrierDto extends RenderObjectDto implements Barrier {
   height: number;
 }
 
-export class FlameDto extends RenderObjectDto implements Flame {
+export class FlameDto extends BaseObjectDto implements Flame {
   @IsInt()
   @IsPositive()
   radius: number;
@@ -109,13 +107,13 @@ export class FlameDto extends RenderObjectDto implements Flame {
   static create(options: Omit<FlameDto, 'id' | 'type'>): FlameDto {
     return plainToInstance<FlameDto, FlameDto>(FlameDto, {
       id: getUuid(),
-      type: RenderObjectType.Flame,
+      type: ObjectType.Flame,
       ...options,
     });
   }
 }
 
-export class HighlightDto extends RenderObjectDto implements Highlight {
+export class HighlightDto extends BaseObjectDto implements Highlight {
   @IsInt()
   @IsPositive()
   radius: number;
@@ -129,41 +127,41 @@ export class HighlightDto extends RenderObjectDto implements Highlight {
   static create(options: Omit<HighlightDto, 'id' | 'type'>): HighlightDto {
     return plainToInstance<HighlightDto, HighlightDto>(HighlightDto, {
       id: getUuid(),
-      type: RenderObjectType.Highlight,
+      type: ObjectType.Highlight,
       ...options,
     });
   }
 }
 
-export class RenderFrameDto implements RenderFrame {
+export class FrameDto implements Frame {
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => RenderObjectDto, {
+  @Type(() => BaseObjectDto, {
     discriminator: {
       property: 'type',
       subTypes: [
-        { value: SpaceshipDto, name: RenderObjectType.Spaceship },
-        { value: BarrierDto, name: RenderObjectType.Barrier },
-        { value: BulletDto, name: RenderObjectType.Bullet },
-        { value: FlameDto, name: RenderObjectType.Flame },
-        { value: HighlightDto, name: RenderObjectType.Highlight },
+        { value: SpaceshipDto, name: ObjectType.Spaceship },
+        { value: BarrierDto, name: ObjectType.Barrier },
+        { value: BulletDto, name: ObjectType.Bullet },
+        { value: FlameDto, name: ObjectType.Flame },
+        { value: HighlightDto, name: ObjectType.Highlight },
       ],
     },
     keepDiscriminatorProperty: true,
   })
-  objects: (SpaceshipDto | BarrierDto | BulletDto | FlameDto | HighlightDto)[]; // TODO check by base class
+  objects: BaseObjectDto[];
 }
 
-export class RenderVideoRequestDto implements RenderVideoRequest {
+export class RenderRequestDto implements RenderRequest {
   @IsObject()
-  scene: RenderSceneDto;
+  scene: SceneDto;
 
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => RenderFrameDto)
-  frames: RenderFrameDto[];
+  @Type(() => FrameDto)
+  frames: FrameDto[];
 
   @IsInt()
   @Min(1)

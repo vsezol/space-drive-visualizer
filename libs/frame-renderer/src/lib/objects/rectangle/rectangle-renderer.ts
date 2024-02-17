@@ -1,5 +1,5 @@
-import { ObjectRenderer } from './abstract/object-renderer.abstract';
-import { Rectangle } from './rectangle.class';
+import { ObjectRenderer } from '../abstract/object-renderer';
+import { Rectangle } from './rectangle';
 
 export class RectangleRenderer extends ObjectRenderer<Rectangle> {
   override render(): void {
