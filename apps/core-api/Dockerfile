@@ -2,19 +2,16 @@ FROM node:18.18.0-alpine
 
 WORKDIR /app
 
-RUN apk add pango-dev g++ make jpeg-dev giflib-dev librsvg-dev
+RUN apk add g++ make pango-dev jpeg-dev
 
-COPY apps/core/package.json .
-COPY apps/core/package-lock.json .
+COPY package.json package-lock.json nx.json tsconfig.base.json ./
+COPY apps/core-api apps/core-api
+COPY libs libs
 
 RUN npm ci
 
 RUN npm run build:core-api
 
-RUN ls -la
-
-COPY dist/apps/core .
-
 EXPOSE 3000
 
-CMD ["node", "main.js"]
+CMD ["node", "dist/apps/core-api/main.js"]
