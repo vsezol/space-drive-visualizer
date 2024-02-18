@@ -10,6 +10,7 @@
     "test:affected": "nx affected:test",
     "build": "nx run-many --target=build --all --parallel --configuration=production",
     "build:affected": "nx affected:build --configuration=production",
+    "build:core-api": "nx run core-api:build",
     "e2e": "nx run-many --target=e2e --all --parallel"
   },
   "private": true,
