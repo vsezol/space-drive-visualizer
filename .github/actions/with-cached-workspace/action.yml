@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Set up cache
       id: cache-workspace
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./
         key: workspace-${{ github.sha }}
