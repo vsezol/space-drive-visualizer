@@ -2,7 +2,8 @@
   "name": "@space-drive-visualizer/videos-contracts",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@space-drive-visualizer/utils": "*"
   },
   "type": "commonjs",
   "main": "./src/index.js",

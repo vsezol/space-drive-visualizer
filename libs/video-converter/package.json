@@ -2,7 +2,10 @@
   "name": "@space-drive-visualizer/video-converter",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@nestjs/common": "^10.0.2",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",

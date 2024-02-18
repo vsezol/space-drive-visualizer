@@ -3,7 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build:core-api": "nx run core-api:build"
+    "lint": "nx run-many --target=lint --all --parallel",
+    "lint:affected:": "nx affected:lint --max-warnings=0",
+    "lint:fix": "nx run-many --target=lint --fix --all --parallel",
+    "test": "nx run-many --target=test --all --parallel",
+    "test:affected": "nx affected:test",
+    "build": "nx run-many --target=build --all --parallel --configuration=production",
+    "build:affected": "nx affected:build --configuration=production",
+    "e2e": "nx run-many --target=e2e --all --parallel"
   },
   "private": true,
   "dependencies": {
