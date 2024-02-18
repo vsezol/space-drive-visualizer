@@ -56,7 +56,7 @@ jobs:
 
       - name: 'PR: Lint workspace and affected projects'
         if: env.is-pull-request == 'true'
-        run: npm run affected:lint
+        run: npm run lint:affected
 
       - name: 'Merge: Lint workspace and all projects'
         if: env.is-merge == 'true'

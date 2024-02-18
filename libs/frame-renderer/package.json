@@ -2,7 +2,9 @@
   "name": "@space-drive-visualizer/frame-renderer",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@space-drive-visualizer/sprite": "*",
+    "canvas": "^2.11.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",
