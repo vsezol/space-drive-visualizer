@@ -52,6 +52,6 @@
     "url-loader": "^4.1.1"
   },
   "optionalDependencies": {
-    "@nx/nx-linux-arm64-musl": "17.2.8"
+    "@nx/nx-linux-x64-gnu": "17.2.8"
   }
 }

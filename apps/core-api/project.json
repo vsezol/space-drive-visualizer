@@ -15,20 +15,24 @@
         "main": "apps/core-api/src/main.ts",
         "tsConfig": "apps/core-api/tsconfig.app.json",
         "assets": ["apps/core-api/src/assets"],
-        "webpackConfig": "apps/core-api/webpack.config.js"
+        "webpackConfig": "apps/core-api/webpack.config.js",
+        "generatePackageJson": true
       },
       "configurations": {
         "development": {},
-        "production": {}
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "./apps/core-api/src/environments/environment",
+              "with": "./apps/core-api/src/environments/environment.prod.ts"
+            }
+          ]
+        }
       }
     },
     "build-docker": {
-      "defaultConfiguration": "production",
-      "command": "docker build -f apps/core-api/Dockerfile . -t vsezol/space-drive-visualizer",
-      "configurations": {
-        "development": {},
-        "production": {}
-      }
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/core-api/Dockerfile . -t vsezol/space-drive-visualizer"
     },
     "serve": {
       "executor": "@nx/js:node",
