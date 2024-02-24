@@ -19,7 +19,6 @@ export interface BaseObject {
   id: string;
   x: number;
   y: number;
-  type: ObjectType;
 }
 
 export interface Spaceship extends BaseObject {
@@ -27,16 +26,19 @@ export interface Spaceship extends BaseObject {
   width: number;
   height: number;
   color: ColorRGB;
+  type: ObjectType.Spaceship;
 }
 
 export interface Bullet extends BaseObject {
   radius: number;
   color: ColorRGB;
+  type: ObjectType.Bullet;
 }
 
 export interface Barrier extends BaseObject {
   width: number;
   height: number;
+  type: ObjectType.Barrier;
 }
 
 export interface Flame extends BaseObject {
@@ -53,6 +55,4 @@ export enum ObjectType {
   Spaceship = 'spaceship',
   Bullet = 'bullet',
   Barrier = 'barrier',
-  Flame = 'flame',
-  Highlight = 'highlight',
 }

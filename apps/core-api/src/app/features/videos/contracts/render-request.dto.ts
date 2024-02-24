@@ -1,3 +1,4 @@
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ColorRGB, ColorRGBA, getUuid } from '@space-drive-visualizer/utils';
 import {
   Barrier,
@@ -28,86 +29,132 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+const stringType = (value: unknown) => `"${value}"`;
+
 export class SceneDto implements Scene {
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   width: number;
 
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   height: number;
 }
 
 export class BaseObjectDto implements BaseObject {
   @IsString()
+  @ApiProperty()
   id: string;
 
   @IsNumber()
+  @ApiProperty()
   x: number;
 
   @IsNumber()
+  @ApiProperty()
   y: number;
-
-  @IsEnum(ObjectType)
-  type: ObjectType;
 }
 
 export class SpaceshipDto extends BaseObjectDto implements Spaceship {
   @IsNumber()
+  @ApiProperty()
   rotation: number;
 
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   width: number;
 
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   height: number;
 
   @IsArray()
   @ArrayMaxSize(3)
   @ArrayMinSize(3)
   @IsInt({ each: true })
+  @ApiProperty({
+    type: [String],
+    minLength: 3,
+    maxLength: 3,
+  })
   color: ColorRGB;
+
+  @IsEnum(ObjectType)
+  @ApiProperty({
+    type: stringType(ObjectType.Spaceship),
+    example: ObjectType.Spaceship,
+  })
+  type: ObjectType.Spaceship;
 }
 
 export class BulletDto extends BaseObjectDto implements Bullet {
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   radius: number;
 
   @IsArray()
   @ArrayMaxSize(3)
   @ArrayMinSize(3)
   @IsInt({ each: true })
+  @ApiProperty({
+    type: [String],
+    minLength: 3,
+    maxLength: 3,
+  })
   color: ColorRGB;
+
+  @IsEnum(ObjectType)
+  @ApiProperty({
+    type: stringType(ObjectType.Bullet),
+    example: ObjectType.Bullet,
+  })
+  type: ObjectType.Bullet;
 }
 
 export class BarrierDto extends BaseObjectDto implements Barrier {
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   width: number;
 
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   height: number;
+
+  @IsEnum(ObjectType)
+  @ApiProperty({
+    type: stringType(ObjectType.Barrier),
+    example: ObjectType.Barrier,
+  })
+  type: ObjectType.Barrier;
 }
 
 export class FlameDto extends BaseObjectDto implements Flame {
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   radius: number;
 
   @IsArray()
   @ArrayMaxSize(4)
   @ArrayMinSize(4)
   @IsNumber({}, { each: true })
+  @ApiProperty({
+    type: [String],
+    minLength: 4,
+    maxLength: 4,
+  })
   color: ColorRGBA;
 
-  static create(options: Omit<FlameDto, 'id' | 'type'>): FlameDto {
+  static create(options: Omit<FlameDto, 'id'>): FlameDto {
     return plainToInstance<FlameDto, FlameDto>(FlameDto, {
       id: getUuid(),
-      type: ObjectType.Flame,
       ...options,
     });
   }
@@ -116,23 +163,29 @@ export class FlameDto extends BaseObjectDto implements Flame {
 export class HighlightDto extends BaseObjectDto implements Highlight {
   @IsInt()
   @IsPositive()
+  @ApiProperty()
   radius: number;
 
   @IsArray()
   @ArrayMaxSize(4)
   @ArrayMinSize(4)
   @IsNumber({}, { each: true })
+  @ApiProperty({
+    type: [String],
+    minLength: 4,
+    maxLength: 4,
+  })
   color: ColorRGBA;
 
-  static create(options: Omit<HighlightDto, 'id' | 'type'>): HighlightDto {
+  static create(options: Omit<HighlightDto, 'id'>): HighlightDto {
     return plainToInstance<HighlightDto, HighlightDto>(HighlightDto, {
       id: getUuid(),
-      type: ObjectType.Highlight,
       ...options,
     });
   }
 }
 
+@ApiExtraModels(SpaceshipDto, BarrierDto, BulletDto)
 export class FrameDto implements Frame {
   @IsArray()
   @ArrayNotEmpty()
@@ -144,27 +197,38 @@ export class FrameDto implements Frame {
         { value: SpaceshipDto, name: ObjectType.Spaceship },
         { value: BarrierDto, name: ObjectType.Barrier },
         { value: BulletDto, name: ObjectType.Bullet },
-        { value: FlameDto, name: ObjectType.Flame },
-        { value: HighlightDto, name: ObjectType.Highlight },
       ],
     },
     keepDiscriminatorProperty: true,
+  })
+  @ApiProperty({
+    type: 'array',
+    items: {
+      oneOf: [
+        { $ref: getSchemaPath(SpaceshipDto) },
+        { $ref: getSchemaPath(BarrierDto) },
+        { $ref: getSchemaPath(BulletDto) },
+      ],
+    },
   })
   objects: BaseObjectDto[];
 }
 
 export class RenderRequestDto implements RenderRequest {
   @IsObject()
+  @ApiProperty()
   scene: SceneDto;
 
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => FrameDto)
+  @ApiProperty({ type: [FrameDto] })
   frames: FrameDto[];
 
   @IsInt()
   @Min(1)
   @Max(120)
+  @ApiProperty()
   frameRate: number;
 }
