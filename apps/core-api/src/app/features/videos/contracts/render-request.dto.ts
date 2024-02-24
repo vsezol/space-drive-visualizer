@@ -34,18 +34,24 @@ const stringType = (value: unknown) => `"${value}"`;
 export class SceneDto implements Scene {
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 100,
+  })
   width: number;
 
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 100,
+  })
   height: number;
 }
 
 export class BaseObjectDto implements BaseObject {
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    example: getUuid(),
+  })
   id: string;
 
   @IsNumber()
@@ -64,12 +70,16 @@ export class SpaceshipDto extends BaseObjectDto implements Spaceship {
 
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 50,
+  })
   width: number;
 
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 50,
+  })
   height: number;
 
   @IsArray()
@@ -80,6 +90,7 @@ export class SpaceshipDto extends BaseObjectDto implements Spaceship {
     type: [String],
     minLength: 3,
     maxLength: 3,
+    example: [0, 100, 255],
   })
   color: ColorRGB;
 
@@ -94,7 +105,9 @@ export class SpaceshipDto extends BaseObjectDto implements Spaceship {
 export class BulletDto extends BaseObjectDto implements Bullet {
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 10,
+  })
   radius: number;
 
   @IsArray()
@@ -105,6 +118,7 @@ export class BulletDto extends BaseObjectDto implements Bullet {
     type: [String],
     minLength: 3,
     maxLength: 3,
+    example: [0, 0, 255],
   })
   color: ColorRGB;
 
@@ -119,12 +133,16 @@ export class BulletDto extends BaseObjectDto implements Bullet {
 export class BarrierDto extends BaseObjectDto implements Barrier {
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 50,
+  })
   width: number;
 
   @IsInt()
   @IsPositive()
-  @ApiProperty()
+  @ApiProperty({
+    example: 50,
+  })
   height: number;
 
   @IsEnum(ObjectType)
@@ -149,6 +167,7 @@ export class FlameDto extends BaseObjectDto implements Flame {
     type: [String],
     minLength: 4,
     maxLength: 4,
+    example: [255, 0, 0, 0],
   })
   color: ColorRGBA;
 
@@ -174,6 +193,7 @@ export class HighlightDto extends BaseObjectDto implements Highlight {
     type: [String],
     minLength: 4,
     maxLength: 4,
+    example: [255, 255, 0, 0],
   })
   color: ColorRGBA;
 
@@ -229,6 +249,8 @@ export class RenderRequestDto implements RenderRequest {
   @IsInt()
   @Min(1)
   @Max(120)
-  @ApiProperty()
+  @ApiProperty({
+    example: 24,
+  })
   frameRate: number;
 }

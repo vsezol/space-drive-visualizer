@@ -10,7 +10,7 @@ import { RenderRequestDto } from './contracts/render-request.dto';
 import { VideoRendererService } from './video-renderer.service';
 
 @Controller('videos')
-@ApiTags()
+@ApiTags('videos')
 export class VideosController {
   constructor(private readonly videoRendererService: VideoRendererService) {}
 
