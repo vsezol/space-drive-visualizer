@@ -170,7 +170,33 @@ const createTestRequestBody = (framesCount: number): RenderRequest => {
         },
       ],
     })),
-    players: [],
+    players: [
+      {
+        id: players[0].id,
+        ip: '',
+        name: 'ABOBA 23 y.o',
+      },
+      {
+        id: players[1].id,
+        ip: '',
+        name: 'Yellow Snow',
+      },
+      {
+        id: players[2].id,
+        ip: '',
+        name: 'Vsevolod Zolotov',
+      },
+      {
+        id: players[3].id,
+        ip: '',
+        name: 'Turboflex',
+      },
+      {
+        id: players[4].id,
+        ip: '',
+        name: 'Пупкина Залупкина',
+      },
+    ],
   };
 };
 

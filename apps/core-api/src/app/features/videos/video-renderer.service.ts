@@ -11,35 +11,34 @@ import { getUniqTempDirPath } from '../../common/path.utils';
 
 import { PreprocessorDataDto } from './contracts/preprocessor.dto';
 import { FramesPreprocessingService } from './frames-preprocessing.service';
-import { RenderRequestMapperService } from './render-request-mapper.service';
 import { SpritesService } from './sprites.service';
 
 @Injectable()
 export class VideoRendererService {
   constructor(
     private readonly spritesService: SpritesService,
-    private readonly renderRequestMapperService: RenderRequestMapperService,
     private readonly framesPreprocessingService: FramesPreprocessingService
   ) {}
 
   async render(data: PreprocessorDataDto): Promise<Readable> {
     const sprites = await lastValueFrom(this.spritesService.sprites$);
 
-    const streams = this.framesPreprocessingService
-      .preprocess(data.frames)
-      .map((frame, index) =>
-        this.renderRequestMapperService.toRendererFrame(frame, index)
-      )
-      .map((frame) => {
-        // TODO create one-time initialization
-        const renderer = new FrameRenderer({
-          width: data.scene.width,
-          height: data.scene.height,
-          sprites,
-        });
+    const preprocessResult = this.framesPreprocessingService.preprocess(data);
 
-        return renderer.render(frame);
+    const renderFrames = preprocessResult.frames.map((frame, index) => ({
+      objects: frame.objects.map((o) => o.toBaseObject(index)),
+    }));
+
+    const streams = renderFrames.map((frame) => {
+      // TODO create one-time initialization
+      const renderer = new FrameRenderer({
+        width: preprocessResult.scene.width,
+        height: preprocessResult.scene.height,
+        sprites,
       });
+
+      return renderer.render(frame);
+    });
 
     const tempFolderPath = getUniqTempDirPath();
 

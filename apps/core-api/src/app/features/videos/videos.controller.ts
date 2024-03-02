@@ -7,12 +7,16 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { RenderRequestDto } from './contracts/render-request.dto';
+import { FramesPreprocessingService } from './frames-preprocessing.service';
 import { VideoRendererService } from './video-renderer.service';
 
 @Controller('videos')
 @ApiTags('videos')
 export class VideosController {
-  constructor(private readonly videoRendererService: VideoRendererService) {}
+  constructor(
+    private readonly videoRendererService: VideoRendererService,
+    private readonly preprocessingService: FramesPreprocessingService
+  ) {}
 
   @Post('render')
   @ApiOkResponse({
@@ -25,10 +29,8 @@ export class VideosController {
   async visualize(
     @Body(new ValidationPipe({ transform: true })) requestBody: RenderRequestDto
   ) {
-    const preprocessorData = requestBody.toPreprocessorData();
-
     const videoFileStream = await this.videoRendererService.render(
-      preprocessorData
+      requestBody.toPreprocessorData()
     );
 
     return new StreamableFile(videoFileStream);

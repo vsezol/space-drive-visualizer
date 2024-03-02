@@ -4,6 +4,16 @@ export interface PreprocessorData {
   scene: PreprocessorScene;
   frames: PreprocessorFrame[];
   frameRate: number;
+  players: PreprocessorPlayerInfo[];
+}
+
+export interface PreprocessorPlayerInfo {
+  id: string;
+  name: string;
+  color: ColorRGB;
+  x: number;
+  y: number;
+  fontSize: number;
 }
 
 export interface PreprocessorScene {
@@ -55,4 +65,5 @@ export enum PreprocessorObjectType {
   Spaceship = 'spaceship',
   Bullet = 'bullet',
   Barrier = 'barrier',
+  PlayerInfo = 'player-info',
 }

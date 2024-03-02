@@ -5,6 +5,8 @@ import { Circle } from './objects/circle/circle';
 import { CircleRenderer } from './objects/circle/circle-renderer';
 import { Highlight } from './objects/highlight/highlight';
 import { HighlightRenderer } from './objects/highlight/highlight-renderer';
+import { Label } from './objects/label/label';
+import { LabelRenderer } from './objects/label/label-renderer';
 import { Rectangle } from './objects/rectangle/rectangle';
 import { RectangleRenderer } from './objects/rectangle/rectangle-renderer';
 import { SpriteObject } from './objects/sprite/sprite-object';
@@ -44,6 +46,10 @@ export class FrameRenderer {
 
         if (object instanceof Highlight) {
           return new HighlightRenderer(this.context, object);
+        }
+
+        if (object instanceof Label) {
+          return new LabelRenderer(this.context, object);
         }
 
         throw new Error(`[FrameRenderer] Renderer for object not found!`);

@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import {
+  ColorRGB,
   SizedMap,
   calcCircleX,
   calcCircleY,
+  getRandomRGB,
   toRadians,
 } from '@space-drive-visualizer/utils';
 import {
   PreprocessorBulletDto,
+  PreprocessorDataDto,
   PreprocessorFlameDto,
   PreprocessorFrameDto,
   PreprocessorHighlightDto,
+  PreprocessorPlayerInfoDto,
   PreprocessorSpaceshipDto,
 } from './contracts/preprocessor.dto';
 
@@ -17,18 +21,88 @@ const LAST_FRAMES_COUNT = 27;
 
 @Injectable()
 export class FramesPreprocessingService {
-  preprocess(frames: PreprocessorFrameDto[]): PreprocessorFrameDto[] {
-    return this.addVisualObjects(frames);
+  preprocess(data: PreprocessorDataDto): PreprocessorDataDto {
+    return this.addPlayersTable(this.addVisualObjects(data));
   }
 
-  private addVisualObjects(
-    frames: PreprocessorFrameDto[]
-  ): PreprocessorFrameDto[] {
+  private addPlayersTable({
+    frames,
+    frameRate,
+    scene,
+    players,
+  }: PreprocessorDataDto): PreprocessorDataDto {
+    const fontSize = 20;
+    const yGap = fontSize;
+    const xGap = 5 + 0;
+
+    const positions: [number, number][] = [];
+
+    let rowsCount = 1;
+    let lastX = 0;
+    let i = 0;
+
+    while (i < players.length) {
+      const x = lastX + xGap;
+      const y = scene.height + rowsCount * (fontSize + yGap);
+      const labelWidth = players[i].name.length * fontSize;
+
+      if (x + labelWidth + xGap > scene.width) {
+        rowsCount++;
+        lastX = 0;
+        continue;
+      }
+
+      i++;
+      lastX += labelWidth + xGap;
+      positions.push([x, y]);
+    }
+
+    const tableHeight = rowsCount * (fontSize + yGap) + yGap;
+
+    const playersTable = players.map(({ color, name, id }, index) => {
+      const [x, y] = positions[index];
+
+      const player = PreprocessorPlayerInfoDto.create({
+        x,
+        y,
+        fontSize,
+        color,
+        name,
+        id,
+      });
+
+      return player;
+    });
+
+    const updatedFrames = frames.map((frame) =>
+      PreprocessorFrameDto.create({
+        objects: [...frame.objects, ...playersTable],
+      })
+    );
+
+    return {
+      frameRate,
+      frames: updatedFrames,
+      scene: {
+        width: scene.width,
+        height: scene.height + tableHeight,
+      },
+      players,
+    };
+  }
+
+  private addVisualObjects({
+    frames,
+    frameRate,
+    scene,
+    players,
+  }: PreprocessorDataDto): PreprocessorDataDto {
     const lastSpaceships = new SizedMap<string, PreprocessorSpaceshipDto>(
       LAST_FRAMES_COUNT
     );
+    const colorById = new Map<string, ColorRGB>();
 
-    return frames.map((frame, frameIndex) => {
+    const updatedFrames = frames.map((frame, frameIndex) => {
       return {
         objects: frame.objects.flatMap((object) => {
           if (object instanceof PreprocessorBulletDto) {
@@ -36,6 +110,13 @@ export class FramesPreprocessingService {
           }
 
           if (object instanceof PreprocessorSpaceshipDto) {
+            let color = colorById.get(object.id);
+            if (!color) {
+              color = getRandomRGB();
+              colorById.set(object.id, color);
+            }
+            object.color = color;
+
             lastSpaceships.add(object.id, object);
 
             const flames = this.createFlamesForSpaceships(
@@ -50,6 +131,24 @@ export class FramesPreprocessingService {
         }),
       };
     });
+
+    const updatedPlayers = players.map(({ id, name, color, x, y, fontSize }) =>
+      PreprocessorPlayerInfoDto.create({
+        id,
+        name,
+        x,
+        y,
+        fontSize,
+        color: colorById.get(id) || color,
+      })
+    );
+
+    return {
+      frames: updatedFrames,
+      players: updatedPlayers,
+      frameRate,
+      scene,
+    };
   }
 
   private createFlamesForSpaceships(

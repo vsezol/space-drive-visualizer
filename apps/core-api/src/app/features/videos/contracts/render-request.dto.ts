@@ -2,10 +2,10 @@ import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import {
   PreprocessorBarrier,
   PreprocessorBullet,
-  PreprocessorData,
   PreprocessorFrame,
   PreprocessorObject,
   PreprocessorObjectType,
+  PreprocessorPlayerInfo,
   PreprocessorScene,
   PreprocessorSpaceship,
   RenderRequest,
@@ -34,6 +34,7 @@ import {
   PreprocessorBulletDto,
   PreprocessorDataDto,
   PreprocessorFrameDto,
+  PreprocessorPlayerInfoDto,
   PreprocessorSceneDto,
   PreprocessorSpaceshipDto,
 } from './preprocessor.dto';
@@ -126,6 +127,17 @@ export class RenderRequestPlayerInfoDto implements RenderRequestPlayerInfo {
     example: 'Vsevolod Zolotov',
   })
   name: string;
+
+  toPreprocessorPlayerInfo(): PreprocessorPlayerInfo {
+    return PreprocessorPlayerInfoDto.create({
+      id: this.id.toString(),
+      name: this.name,
+      color: [255, 255, 255],
+      x: 0,
+      y: 0,
+      fontSize: 14,
+    });
+  }
 }
 
 export abstract class RenderRequestObjectDto implements RenderRequestObject {
@@ -273,14 +285,16 @@ export class RenderRequestDto implements RenderRequest {
 
   @IsArray()
   @ValidateNested({ each: true })
+  @Type(() => RenderRequestPlayerInfoDto)
   @ApiProperty({ type: [RenderRequestPlayerInfoDto] })
   players: RenderRequestPlayerInfoDto[];
 
-  toPreprocessorData(): PreprocessorData {
+  toPreprocessorData(): PreprocessorDataDto {
     return PreprocessorDataDto.create({
       scene: this.map.toPreprocessorScene(),
       frames: this.history.map((x) => x.toPreprocessorFrame()),
       frameRate: 60,
+      players: this.players.map((x) => x.toPreprocessorPlayerInfo()),
     });
   }
 }
