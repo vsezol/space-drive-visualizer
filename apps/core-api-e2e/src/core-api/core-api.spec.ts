@@ -1,10 +1,9 @@
-import { getUuid } from '@space-drive-visualizer/utils';
 import {
-  PreprocessorBarrier,
-  PreprocessorBullet,
-  PreprocessorData,
-  PreprocessorObjectType,
-  PreprocessorSpaceship,
+  RenderRequest,
+  RenderRequestBarrier,
+  RenderRequestMissile,
+  RenderRequestObjectType,
+  RenderRequestPlayer,
 } from '@space-drive-visualizer/videos-contracts';
 import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
@@ -21,22 +20,22 @@ import { Stream } from 'stream';
 // 6000 frames 60fps 1.0 quality - 19.554s, 4mb
 // 6000 frames 60fps 1.0 quality progressive - 34.105s, 4.3mb
 
-function* bulletShooter(
+function* missileShooter(
   times: number,
   width: number,
   height: number
-): Generator<PreprocessorBullet[], undefined, [number, number]> {
-  let bullets: PreprocessorBullet[] = [];
+): Generator<RenderRequestMissile[], undefined, [number, number]> {
+  let missiles: RenderRequestMissile[] = [];
   let lastPoint: [number, number];
 
   for (let i = 0; i < times; i++) {
-    const [x, y] = yield bullets;
+    const [x, y] = yield missiles;
 
     if (Array.isArray(lastPoint)) {
       const deltaX = x - lastPoint[0];
       const deltaY = y - lastPoint[1];
 
-      bullets = bullets
+      missiles = missiles
         .map((item) => ({
           ...item,
           x: item.x + deltaX * 4,
@@ -48,17 +47,17 @@ function* bulletShooter(
     lastPoint = [x, y];
 
     if (i % 20 === 0) {
-      bullets.push(createBullet(x, y, [255, 0, 255]));
+      missiles.push(createMissile(x, y));
     }
   }
 }
 
-const createTestRequestBody = (framesCount: number): PreprocessorData => {
-  const bullets = [
-    createBullet(10, 10, [64, 255, 76]),
-    createBullet(500, 250, [0, 200, 76]),
-    createBullet(500, 250, [0, 255, 50]),
-    createBullet(500, 250, [255, 255, 0]),
+const createTestRequestBody = (framesCount: number): RenderRequest => {
+  const missiles = [
+    createMissile(10, 10),
+    createMissile(500, 250),
+    createMissile(500, 250),
+    createMissile(500, 250),
   ];
 
   const barriers = [
@@ -67,50 +66,40 @@ const createTestRequestBody = (framesCount: number): PreprocessorData => {
     createBarrier(800, 100, 150),
   ];
 
-  const spaceships = [
-    createSpaceship({
+  const players = [
+    createPlayer({
       x: 530,
       y: 275,
-      rotation: 180,
-      width: 95,
-      height: 95,
-      color: [255, 201, 129],
+      direction: 180,
+      r: 95,
     }),
-    createSpaceship({
+    createPlayer({
       x: 550,
       y: 300,
-      rotation: 180,
-      width: 50,
-      height: 50,
-      color: [64, 255, 76],
+      direction: 180,
+      r: 50,
     }),
-    createSpaceship({
+    createPlayer({
       x: 250,
       y: 250,
-      rotation: 0,
-      width: 95,
-      height: 95,
-      color: [64, 255, 255],
+      direction: 0,
+      r: 95,
     }),
-    createSpaceship({
+    createPlayer({
       x: 100,
       y: 100,
-      rotation: 0,
-      width: 125,
-      height: 125,
-      color: [255, 0, 255],
+      direction: 0,
+      r: 125,
     }),
-    createSpaceship({
+    createPlayer({
       x: 700,
       y: 200,
-      rotation: 0,
-      width: 75,
-      height: 75,
-      color: [255, 0, 255],
+      direction: 0,
+      r: 75,
     }),
   ];
 
-  const shooter = bulletShooter(framesCount - 1, 1000, 500);
+  const shooter = missileShooter(framesCount - 1, 1000, 500);
 
   const getShoots = (x: number, y: number) => {
     const result = shooter.next([x, y]);
@@ -119,102 +108,95 @@ const createTestRequestBody = (framesCount: number): PreprocessorData => {
   };
 
   return {
-    scene: {
+    map: {
       width: 1000,
       height: 500,
+      seed: Math.trunc(Math.random() * 1000),
+      barriers,
     },
-    frames: new Array(framesCount).fill('').map((_, index) => ({
+    history: new Array(framesCount).fill('').map((_, index) => ({
+      time: index,
       objects: [
         {
-          ...spaceships[0],
+          ...players[0],
           x: 530 - 200 * Math.cos((-index * 0.5 * Math.PI) / 180),
           y: 275 - 200 * Math.sin((-index * 0.5 * Math.PI) / 180),
-          rotation: 180 - index * 0.5,
+          direction: 180 - index * 0.5,
         },
         {
-          ...spaceships[1],
-          x: spaceships[1].x - 100 * Math.cos((-index * 2 * Math.PI) / 180),
-          y: spaceships[1].y - 100 * Math.sin((-index * 2 * Math.PI) / 180),
-          rotation: spaceships[1].rotation - index * 2,
+          ...players[1],
+          x: players[1].x - 100 * Math.cos((-index * 2 * Math.PI) / 180),
+          y: players[1].y - 100 * Math.sin((-index * 2 * Math.PI) / 180),
+          direction: players[1].direction - index * 2,
         },
         {
-          ...spaceships[2],
-          x: spaceships[2].x - 200 * Math.cos((index * Math.PI) / 180),
-          y: spaceships[2].y - 200 * Math.sin((index * Math.PI) / 180),
-          rotation: index,
+          ...players[2],
+          x: players[2].x - 200 * Math.cos((index * Math.PI) / 180),
+          y: players[2].y - 200 * Math.sin((index * Math.PI) / 180),
+          direction: index,
         },
         {
-          ...spaceships[3],
-          x: spaceships[3].x - 200 * Math.cos((index * Math.PI) / 180),
-          y: spaceships[3].y - 200 * Math.sin((index * Math.PI) / 180),
-          rotation: index,
+          ...players[3],
+          x: players[3].x - 200 * Math.cos((index * Math.PI) / 180),
+          y: players[3].y - 200 * Math.sin((index * Math.PI) / 180),
+          direction: index,
         },
         ...getShoots(
-          spaceships[4].x - 100 * Math.cos((index * 0.5 * Math.PI) / 180),
-          spaceships[4].y - 100 * Math.sin((index * 0.5 * Math.PI) / 180)
+          players[4].x - 100 * Math.cos((index * 0.5 * Math.PI) / 180),
+          players[4].y - 100 * Math.sin((index * 0.5 * Math.PI) / 180)
         ),
         {
-          ...spaceships[4],
-          x: spaceships[4].x - 100 * Math.cos((index * 0.5 * Math.PI) / 180),
-          y: spaceships[4].y - 100 * Math.sin((index * 0.5 * Math.PI) / 180),
-          rotation: spaceships[4].rotation + index * 0.5,
+          ...players[4],
+          x: players[4].x - 100 * Math.cos((index * 0.5 * Math.PI) / 180),
+          y: players[4].y - 100 * Math.sin((index * 0.5 * Math.PI) / 180),
+          direction: players[4].direction + index * 0.5,
         },
         {
-          ...bullets[0],
-          x: bullets[0].x + index,
-          y: bullets[0].y + index,
+          ...missiles[0],
+          x: missiles[0].x + index,
+          y: missiles[0].y + index,
         },
         {
-          ...bullets[1],
-          y: bullets[1].y + index * 2,
+          ...missiles[1],
+          y: missiles[1].y + index * 2,
         },
         {
-          ...bullets[2],
-          x: bullets[2].x + index * 2,
+          ...missiles[2],
+          x: missiles[2].x + index * 2,
         },
         {
-          ...bullets[3],
-          x: bullets[3].x - index,
+          ...missiles[3],
+          x: missiles[3].x - index,
         },
-        ...barriers,
       ],
     })),
-    frameRate: 60,
+    players: [],
   };
 };
 
-function createSpaceship({
+function createPlayer({
   x,
   y,
-  rotation,
-  width,
-  height,
-  color,
-}: Omit<PreprocessorSpaceship, 'id' | 'type'>): PreprocessorSpaceship {
+  direction,
+  r,
+}: Omit<RenderRequestPlayer, 'id' | 'object'>): RenderRequestPlayer {
   return {
-    id: getUuid(),
+    object: RenderRequestObjectType.Player,
+    id: Math.trunc(Math.random() * 10000),
     x,
     y,
-    rotation,
-    width,
-    height,
-    type: PreprocessorObjectType.Spaceship,
-    color,
+    direction,
+    r,
   };
 }
 
-function createBullet(
-  x: number,
-  y: number,
-  color: [number, number, number]
-): PreprocessorBullet {
+function createMissile(x: number, y: number): RenderRequestMissile {
   return {
-    id: getUuid(),
     x,
     y,
-    radius: 10,
-    type: PreprocessorObjectType.Bullet,
-    color,
+    object: RenderRequestObjectType.Missile,
+    direction: 0,
+    id: Math.trunc(Math.random() * 10000),
   };
 }
 
@@ -222,14 +204,11 @@ function createBarrier(
   x: number,
   y: number,
   size: number
-): PreprocessorBarrier {
+): RenderRequestBarrier {
   return {
-    id: getUuid(),
     x,
     y,
-    width: size,
-    height: size,
-    type: PreprocessorObjectType.Barrier,
+    r: size,
   };
 }
 
@@ -248,7 +227,7 @@ describe('GET /videos', () => {
           }
         );
       } catch (error) {
-        console.log(error.message);
+        console.log(JSON.stringify(error));
       }
 
       const outputPath = join(__dirname, '../temp/test-response.mp4');

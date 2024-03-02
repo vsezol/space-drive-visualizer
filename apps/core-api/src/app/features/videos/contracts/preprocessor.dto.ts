@@ -1,4 +1,4 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
 import { ColorRGB, ColorRGBA, getUuid } from '@space-drive-visualizer/utils';
 import {
   PreprocessorBarrier,
@@ -10,6 +10,7 @@ import {
   PreprocessorObject,
   PreprocessorObjectType,
   PreprocessorScene,
+  PreprocessorSpaceship,
 } from '@space-drive-visualizer/videos-contracts';
 
 import { Type, plainToInstance } from 'class-transformer';
@@ -28,8 +29,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-
-const stringType = (value: unknown) => `"${value}"`;
+import { stringType } from './string-type';
 
 export class PreprocessorSceneDto implements PreprocessorScene {
   @IsInt()
@@ -45,6 +45,10 @@ export class PreprocessorSceneDto implements PreprocessorScene {
     example: 100,
   })
   height: number;
+
+  static create(options: PreprocessorSceneDto): PreprocessorScene {
+    return plainToInstance(PreprocessorSceneDto, options);
+  }
 }
 
 export class PreprocessorObjectDto implements PreprocessorObject {
@@ -65,7 +69,7 @@ export class PreprocessorObjectDto implements PreprocessorObject {
 
 export class PreprocessorSpaceshipDto
   extends PreprocessorObjectDto
-  implements PreprocessorScene
+  implements PreprocessorSpaceship
 {
   @IsNumber()
   @ApiProperty()
@@ -103,6 +107,16 @@ export class PreprocessorSpaceshipDto
     example: PreprocessorObjectType.Spaceship,
   })
   type: PreprocessorObjectType.Spaceship;
+
+  static create(
+    options: Omit<PreprocessorSpaceship, 'type' | 'color'>
+  ): PreprocessorSpaceship {
+    return plainToInstance(PreprocessorSpaceshipDto, {
+      ...options,
+      type: PreprocessorObjectType.Spaceship,
+      color: [255, 255, 255],
+    });
+  }
 }
 
 export class PreprocessorBulletDto
@@ -134,6 +148,16 @@ export class PreprocessorBulletDto
     example: PreprocessorObjectType.Bullet,
   })
   type: PreprocessorObjectType.Bullet;
+
+  static create(
+    options: Omit<PreprocessorBullet, 'type' | 'color'>
+  ): PreprocessorBullet {
+    return plainToInstance(PreprocessorBulletDto, {
+      ...options,
+      type: PreprocessorObjectType.Bullet,
+      color: [255, 0, 0],
+    });
+  }
 }
 
 export class PreprocessorBarrierDto
@@ -160,6 +184,16 @@ export class PreprocessorBarrierDto
     example: PreprocessorObjectType.Barrier,
   })
   type: PreprocessorObjectType.Barrier;
+
+  static create(
+    options: Omit<PreprocessorBarrier, 'type' | 'id'>
+  ): PreprocessorBarrier {
+    return plainToInstance(PreprocessorBarrierDto, {
+      ...options,
+      id: getUuid(),
+      type: PreprocessorObjectType.Barrier,
+    });
+  }
 }
 
 export class PreprocessorFlameDto
@@ -253,36 +287,29 @@ export class PreprocessorFrameDto implements PreprocessorFrame {
     },
     keepDiscriminatorProperty: true,
   })
-  @ApiProperty({
-    type: 'array',
-    items: {
-      oneOf: [
-        { $ref: getSchemaPath(PreprocessorSpaceshipDto) },
-        { $ref: getSchemaPath(PreprocessorBarrierDto) },
-        { $ref: getSchemaPath(PreprocessorBulletDto) },
-      ],
-    },
-  })
   objects: PreprocessorObjectDto[];
+
+  static create(options: PreprocessorFrame): PreprocessorFrame {
+    return plainToInstance(PreprocessorFrameDto, options);
+  }
 }
 
 export class PreprocessorDataDto implements PreprocessorData {
   @IsObject()
-  @ApiProperty()
   scene: PreprocessorSceneDto;
 
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => PreprocessorFrameDto)
-  @ApiProperty({ type: [PreprocessorFrameDto] })
   frames: PreprocessorFrameDto[];
 
   @IsInt()
   @Min(1)
   @Max(120)
-  @ApiProperty({
-    example: 24,
-  })
   frameRate: number;
+
+  static create(options: PreprocessorData): PreprocessorData {
+    return plainToInstance(PreprocessorDataDto, options);
+  }
 }
