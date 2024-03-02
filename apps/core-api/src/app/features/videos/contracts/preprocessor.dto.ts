@@ -1,17 +1,17 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ColorRGB, ColorRGBA, getUuid } from '@space-drive-visualizer/utils';
 import {
-  Barrier,
-  BaseObject,
-  Bullet,
-  Flame,
-  Frame,
-  Highlight,
-  ObjectType,
-  RenderRequest,
-  Scene,
-  Spaceship,
+  PreprocessorBarrier,
+  PreprocessorBullet,
+  PreprocessorData,
+  PreprocessorFlame,
+  PreprocessorFrame,
+  PreprocessorHighlight,
+  PreprocessorObject,
+  PreprocessorObjectType,
+  PreprocessorScene,
 } from '@space-drive-visualizer/videos-contracts';
+
 import { Type, plainToInstance } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -31,7 +31,7 @@ import {
 
 const stringType = (value: unknown) => `"${value}"`;
 
-export class SceneDto implements Scene {
+export class PreprocessorSceneDto implements PreprocessorScene {
   @IsInt()
   @IsPositive()
   @ApiProperty({
@@ -47,7 +47,7 @@ export class SceneDto implements Scene {
   height: number;
 }
 
-export class BaseObjectDto implements BaseObject {
+export class PreprocessorObjectDto implements PreprocessorObject {
   @IsString()
   @ApiProperty({
     example: getUuid(),
@@ -63,7 +63,10 @@ export class BaseObjectDto implements BaseObject {
   y: number;
 }
 
-export class SpaceshipDto extends BaseObjectDto implements Spaceship {
+export class PreprocessorSpaceshipDto
+  extends PreprocessorObjectDto
+  implements PreprocessorScene
+{
   @IsNumber()
   @ApiProperty()
   rotation: number;
@@ -94,15 +97,18 @@ export class SpaceshipDto extends BaseObjectDto implements Spaceship {
   })
   color: ColorRGB;
 
-  @IsEnum(ObjectType)
+  @IsEnum(PreprocessorObjectType)
   @ApiProperty({
-    type: stringType(ObjectType.Spaceship),
-    example: ObjectType.Spaceship,
+    type: stringType(PreprocessorObjectType.Spaceship),
+    example: PreprocessorObjectType.Spaceship,
   })
-  type: ObjectType.Spaceship;
+  type: PreprocessorObjectType.Spaceship;
 }
 
-export class BulletDto extends BaseObjectDto implements Bullet {
+export class PreprocessorBulletDto
+  extends PreprocessorObjectDto
+  implements PreprocessorBullet
+{
   @IsInt()
   @IsPositive()
   @ApiProperty({
@@ -122,15 +128,18 @@ export class BulletDto extends BaseObjectDto implements Bullet {
   })
   color: ColorRGB;
 
-  @IsEnum(ObjectType)
+  @IsEnum(PreprocessorObjectType)
   @ApiProperty({
-    type: stringType(ObjectType.Bullet),
-    example: ObjectType.Bullet,
+    type: stringType(PreprocessorObjectType.Bullet),
+    example: PreprocessorObjectType.Bullet,
   })
-  type: ObjectType.Bullet;
+  type: PreprocessorObjectType.Bullet;
 }
 
-export class BarrierDto extends BaseObjectDto implements Barrier {
+export class PreprocessorBarrierDto
+  extends PreprocessorObjectDto
+  implements PreprocessorBarrier
+{
   @IsInt()
   @IsPositive()
   @ApiProperty({
@@ -145,15 +154,18 @@ export class BarrierDto extends BaseObjectDto implements Barrier {
   })
   height: number;
 
-  @IsEnum(ObjectType)
+  @IsEnum(PreprocessorObjectType)
   @ApiProperty({
-    type: stringType(ObjectType.Barrier),
-    example: ObjectType.Barrier,
+    type: stringType(PreprocessorObjectType.Barrier),
+    example: PreprocessorObjectType.Barrier,
   })
-  type: ObjectType.Barrier;
+  type: PreprocessorObjectType.Barrier;
 }
 
-export class FlameDto extends BaseObjectDto implements Flame {
+export class PreprocessorFlameDto
+  extends PreprocessorObjectDto
+  implements PreprocessorFlame
+{
   @IsInt()
   @IsPositive()
   @ApiProperty()
@@ -171,15 +183,23 @@ export class FlameDto extends BaseObjectDto implements Flame {
   })
   color: ColorRGBA;
 
-  static create(options: Omit<FlameDto, 'id'>): FlameDto {
-    return plainToInstance<FlameDto, FlameDto>(FlameDto, {
-      id: getUuid(),
-      ...options,
-    });
+  static create(
+    options: Omit<PreprocessorFlameDto, 'id'>
+  ): PreprocessorFlameDto {
+    return plainToInstance<PreprocessorFlameDto, PreprocessorFlameDto>(
+      PreprocessorFlameDto,
+      {
+        id: getUuid(),
+        ...options,
+      }
+    );
   }
 }
 
-export class HighlightDto extends BaseObjectDto implements Highlight {
+export class PreprocessorHighlightDto
+  extends PreprocessorObjectDto
+  implements PreprocessorHighlight
+{
   @IsInt()
   @IsPositive()
   @ApiProperty()
@@ -197,26 +217,38 @@ export class HighlightDto extends BaseObjectDto implements Highlight {
   })
   color: ColorRGBA;
 
-  static create(options: Omit<HighlightDto, 'id'>): HighlightDto {
-    return plainToInstance<HighlightDto, HighlightDto>(HighlightDto, {
-      id: getUuid(),
-      ...options,
-    });
+  static create(
+    options: Omit<PreprocessorHighlightDto, 'id'>
+  ): PreprocessorHighlightDto {
+    return plainToInstance<PreprocessorHighlightDto, PreprocessorHighlightDto>(
+      PreprocessorHighlightDto,
+      {
+        id: getUuid(),
+        ...options,
+      }
+    );
   }
 }
 
-@ApiExtraModels(SpaceshipDto, BarrierDto, BulletDto)
-export class FrameDto implements Frame {
+@ApiExtraModels(
+  PreprocessorSpaceshipDto,
+  PreprocessorBarrierDto,
+  PreprocessorBulletDto
+)
+export class PreprocessorFrameDto implements PreprocessorFrame {
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => BaseObjectDto, {
+  @Type(() => PreprocessorObjectDto, {
     discriminator: {
       property: 'type',
       subTypes: [
-        { value: SpaceshipDto, name: ObjectType.Spaceship },
-        { value: BarrierDto, name: ObjectType.Barrier },
-        { value: BulletDto, name: ObjectType.Bullet },
+        {
+          value: PreprocessorSpaceshipDto,
+          name: PreprocessorObjectType.Spaceship,
+        },
+        { value: PreprocessorBarrierDto, name: PreprocessorObjectType.Barrier },
+        { value: PreprocessorBulletDto, name: PreprocessorObjectType.Bullet },
       ],
     },
     keepDiscriminatorProperty: true,
@@ -225,26 +257,26 @@ export class FrameDto implements Frame {
     type: 'array',
     items: {
       oneOf: [
-        { $ref: getSchemaPath(SpaceshipDto) },
-        { $ref: getSchemaPath(BarrierDto) },
-        { $ref: getSchemaPath(BulletDto) },
+        { $ref: getSchemaPath(PreprocessorSpaceshipDto) },
+        { $ref: getSchemaPath(PreprocessorBarrierDto) },
+        { $ref: getSchemaPath(PreprocessorBulletDto) },
       ],
     },
   })
-  objects: BaseObjectDto[];
+  objects: PreprocessorObjectDto[];
 }
 
-export class RenderRequestDto implements RenderRequest {
+export class PreprocessorDataDto implements PreprocessorData {
   @IsObject()
   @ApiProperty()
-  scene: SceneDto;
+  scene: PreprocessorSceneDto;
 
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => FrameDto)
-  @ApiProperty({ type: [FrameDto] })
-  frames: FrameDto[];
+  @Type(() => PreprocessorFrameDto)
+  @ApiProperty({ type: [PreprocessorFrameDto] })
+  frames: PreprocessorFrameDto[];
 
   @IsInt()
   @Min(1)

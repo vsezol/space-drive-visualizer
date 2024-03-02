@@ -1,1 +1,1 @@
-export * from './lib/render-contracts';
+export * from './lib/preprocessor-contracts';

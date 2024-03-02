@@ -9,51 +9,51 @@ import {
 } from '@space-drive-visualizer/frame-renderer';
 import { stringifyRGB, stringifyRGBA } from '@space-drive-visualizer/utils';
 import {
-  BarrierDto,
-  BaseObjectDto,
-  BulletDto,
-  FlameDto,
-  FrameDto,
-  HighlightDto,
-  SpaceshipDto,
-} from './contracts/render-request.dto';
+  PreprocessorBarrierDto,
+  PreprocessorBulletDto,
+  PreprocessorFlameDto,
+  PreprocessorFrameDto,
+  PreprocessorHighlightDto,
+  PreprocessorObjectDto,
+  PreprocessorSpaceshipDto,
+} from './contracts/preprocessor.dto';
 import { SpriteName } from './contracts/sprite-name';
 
 @Injectable()
 export class RenderRequestMapperService {
-  toRendererFrame(from: FrameDto, index: number): Frame {
+  toRendererFrame(from: PreprocessorFrameDto, index: number): Frame {
     return {
       objects: from.objects.map((obj) => this.toRendererBaseObject(obj, index)),
     };
   }
 
   private toRendererBaseObject(
-    from: BaseObjectDto,
+    from: PreprocessorObjectDto,
     frameIndex: number
   ): BaseObject {
-    if (from instanceof SpaceshipDto) {
+    if (from instanceof PreprocessorSpaceshipDto) {
       return this.mapSpaceshipToSprite(from, frameIndex);
     }
 
-    if (from instanceof BulletDto) {
+    if (from instanceof PreprocessorBulletDto) {
       return this.mapBulletToCircle(from);
     }
 
-    if (from instanceof BarrierDto) {
+    if (from instanceof PreprocessorBarrierDto) {
       return this.mapBarrierToSprite(from, frameIndex);
     }
 
-    if (from instanceof FlameDto) {
+    if (from instanceof PreprocessorFlameDto) {
       return this.mapFlameToCircle(from);
     }
 
-    if (from instanceof HighlightDto) {
+    if (from instanceof PreprocessorHighlightDto) {
       return this.mapHighlightToHighlight(from);
     }
   }
 
   private mapSpaceshipToSprite(
-    from: SpaceshipDto,
+    from: PreprocessorSpaceshipDto,
     frameIndex: number
   ): SpriteObject {
     return new SpriteObject({
@@ -67,7 +67,7 @@ export class RenderRequestMapperService {
     });
   }
 
-  private mapBulletToCircle(from: BulletDto): Circle {
+  private mapBulletToCircle(from: PreprocessorBulletDto): Circle {
     return new Circle({
       x: from.x,
       y: from.y,
@@ -77,7 +77,7 @@ export class RenderRequestMapperService {
   }
 
   private mapBarrierToSprite(
-    from: BarrierDto,
+    from: PreprocessorBarrierDto,
     frameIndex: number
   ): SpriteObject {
     return new SpriteObject({
@@ -91,7 +91,7 @@ export class RenderRequestMapperService {
     });
   }
 
-  private mapFlameToCircle(from: FlameDto): Circle {
+  private mapFlameToCircle(from: PreprocessorFlameDto): Circle {
     const alpha = Number((0.6 + Math.random() * 0.4).toFixed(2));
 
     const [red, green, blue, opacity] = from.color;
@@ -105,7 +105,7 @@ export class RenderRequestMapperService {
     });
   }
 
-  private mapHighlightToHighlight(object: HighlightDto): Highlight {
+  private mapHighlightToHighlight(object: PreprocessorHighlightDto): Highlight {
     return new Highlight({
       x: object.x,
       y: object.y,

@@ -9,7 +9,7 @@ import { lastValueFrom } from 'rxjs';
 import { Readable } from 'stream';
 import { getUniqTempDirPath } from '../../common/path.utils';
 
-import { RenderRequestDto } from './contracts/render-request.dto';
+import { PreprocessorDataDto } from './contracts/preprocessor.dto';
 import { FramesPreprocessingService } from './frames-preprocessing.service';
 import { RenderRequestMapperService } from './render-request-mapper.service';
 import { SpritesService } from './sprites.service';
@@ -22,7 +22,7 @@ export class VideoRendererService {
     private readonly framesPreprocessingService: FramesPreprocessingService
   ) {}
 
-  async render(data: RenderRequestDto): Promise<Readable> {
+  async render(data: PreprocessorDataDto): Promise<Readable> {
     const sprites = await lastValueFrom(this.spritesService.sprites$);
 
     const streams = this.framesPreprocessingService

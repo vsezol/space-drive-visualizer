@@ -1,10 +1,10 @@
 import { getUuid } from '@space-drive-visualizer/utils';
 import {
-  Barrier,
-  Bullet,
-  ObjectType,
-  RenderRequest,
-  Spaceship,
+  PreprocessorBarrier,
+  PreprocessorBullet,
+  PreprocessorData,
+  PreprocessorObjectType,
+  PreprocessorSpaceship,
 } from '@space-drive-visualizer/videos-contracts';
 import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
@@ -25,8 +25,8 @@ function* bulletShooter(
   times: number,
   width: number,
   height: number
-): Generator<Bullet[], undefined, [number, number]> {
-  let bullets: Bullet[] = [];
+): Generator<PreprocessorBullet[], undefined, [number, number]> {
+  let bullets: PreprocessorBullet[] = [];
   let lastPoint: [number, number];
 
   for (let i = 0; i < times; i++) {
@@ -53,7 +53,7 @@ function* bulletShooter(
   }
 }
 
-const createTestRequestBody = (framesCount: number): RenderRequest => {
+const createTestRequestBody = (framesCount: number): PreprocessorData => {
   const bullets = [
     createBullet(10, 10, [64, 255, 76]),
     createBullet(500, 250, [0, 200, 76]),
@@ -190,7 +190,7 @@ function createSpaceship({
   width,
   height,
   color,
-}: Omit<Spaceship, 'id' | 'type'>): Spaceship {
+}: Omit<PreprocessorSpaceship, 'id' | 'type'>): PreprocessorSpaceship {
   return {
     id: getUuid(),
     x,
@@ -198,7 +198,7 @@ function createSpaceship({
     rotation,
     width,
     height,
-    type: ObjectType.Spaceship,
+    type: PreprocessorObjectType.Spaceship,
     color,
   };
 }
@@ -207,29 +207,33 @@ function createBullet(
   x: number,
   y: number,
   color: [number, number, number]
-): Bullet {
+): PreprocessorBullet {
   return {
     id: getUuid(),
     x,
     y,
     radius: 10,
-    type: ObjectType.Bullet,
+    type: PreprocessorObjectType.Bullet,
     color,
   };
 }
 
-function createBarrier(x: number, y: number, size: number): Barrier {
+function createBarrier(
+  x: number,
+  y: number,
+  size: number
+): PreprocessorBarrier {
   return {
     id: getUuid(),
     x,
     y,
     width: size,
     height: size,
-    type: ObjectType.Barrier,
+    type: PreprocessorObjectType.Barrier,
   };
 }
 
-describe('GET /api', () => {
+describe('GET /videos', () => {
   it(
     'should return a message',
     async () => {
@@ -237,7 +241,7 @@ describe('GET /api', () => {
 
       try {
         res = await axios.post<Stream>(
-          `/api/videos/render`,
+          `/videos/render`,
           createTestRequestBody(600),
           {
             responseType: 'stream',

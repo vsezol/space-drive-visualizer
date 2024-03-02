@@ -6,34 +6,36 @@ import {
   toRadians,
 } from '@space-drive-visualizer/utils';
 import {
-  BulletDto,
-  FlameDto,
-  FrameDto,
-  HighlightDto,
-  SpaceshipDto,
-} from './contracts/render-request.dto';
+  PreprocessorBulletDto,
+  PreprocessorFlameDto,
+  PreprocessorFrameDto,
+  PreprocessorHighlightDto,
+  PreprocessorSpaceshipDto,
+} from './contracts/preprocessor.dto';
 
 const LAST_FRAMES_COUNT = 27;
 
 @Injectable()
 export class FramesPreprocessingService {
-  preprocess(frames: FrameDto[]): FrameDto[] {
+  preprocess(frames: PreprocessorFrameDto[]): PreprocessorFrameDto[] {
     return this.addVisualObjects(frames);
   }
 
-  private addVisualObjects(frames: FrameDto[]): FrameDto[] {
-    const lastSpaceships = new SizedMap<string, SpaceshipDto>(
+  private addVisualObjects(
+    frames: PreprocessorFrameDto[]
+  ): PreprocessorFrameDto[] {
+    const lastSpaceships = new SizedMap<string, PreprocessorSpaceshipDto>(
       LAST_FRAMES_COUNT
     );
 
     return frames.map((frame, frameIndex) => {
       return {
         objects: frame.objects.flatMap((object) => {
-          if (object instanceof BulletDto) {
+          if (object instanceof PreprocessorBulletDto) {
             return [this.createBulletHighlight(object, frameIndex), object];
           }
 
-          if (object instanceof SpaceshipDto) {
+          if (object instanceof PreprocessorSpaceshipDto) {
             lastSpaceships.add(object.id, object);
 
             const flames = this.createFlamesForSpaceships(
@@ -51,18 +53,18 @@ export class FramesPreprocessingService {
   }
 
   private createFlamesForSpaceships(
-    lastObjects: SpaceshipDto[],
+    lastObjects: PreprocessorSpaceshipDto[],
     size: number
-  ): FlameDto[] {
+  ): PreprocessorFlameDto[] {
     return lastObjects.map((object, index) =>
       this.createSpaceshipFlame(object, index / size + 0)
     );
   }
 
   private createSpaceshipFlame(
-    target: SpaceshipDto,
+    target: PreprocessorSpaceshipDto,
     sizeFactor: number
-  ): FlameDto {
+  ): PreprocessorFlameDto {
     const originalSize = target.width / 12;
     const size = originalSize * sizeFactor;
 
@@ -73,7 +75,7 @@ export class FramesPreprocessingService {
 
     const withVariance = (x: number) => x + Math.random() * originalSize;
 
-    return FlameDto.create({
+    return PreprocessorFlameDto.create({
       x: calcCircleX(target.x, withVariance(distance), angle),
       y: calcCircleY(target.y, withVariance(distance), angle),
       radius: size,
@@ -82,13 +84,13 @@ export class FramesPreprocessingService {
   }
 
   private createBulletHighlight(
-    target: BulletDto,
+    target: PreprocessorBulletDto,
     frameIndex: number
-  ): HighlightDto {
+  ): PreprocessorHighlightDto {
     const radius = target.radius * 2;
     const alpha = 0.25 * Math.sin(10 * toRadians(frameIndex)) + 0.75;
 
-    return HighlightDto.create({
+    return PreprocessorHighlightDto.create({
       x: target.x,
       y: target.y,
       radius,
